@@ -1,0 +1,225 @@
+const express = require('express');
+const db = require('./database');
+const app = express();
+app.use(express.json());
+
+app.post('/api/calculate', (req, res) => {
+  try {
+    const { studentId, courseId, grades } = req.body;
+    
+    if (!studentId || !courseId || !grades || !Array.isArray(grades)) {
+      return res.status(400).json({ 
+        error: 'Ошибка: нужны studentId, courseId и grades (массив)' 
+      });
+    }
+    
+    if (grades.length === 0) {
+      return res.status(400).json({ error: 'Ошибка: массив grades пуст' });
+    }
+    
+    let totalScore = 0;
+    let totalWeight = 0;
+    
+    for (const grade of grades) {
+      if (typeof grade.value !== 'number' || typeof grade.weight !== 'number') {
+        return res.status(400).json({ error: 'Ошибка: value и weight должны быть числами' });
+      }
+      totalScore += grade.value * grade.weight;
+      totalWeight += grade.weight;
+    }
+    
+    const finalScore = totalWeight > 0 ? totalScore / totalWeight : 0;
+    const roundedScore = Math.round(finalScore * 100) / 100;
+    
+    db.run(`INSERT INTO results (user_id, course_id, score) VALUES (?, ?, ?)`,
+      [studentId, courseId, roundedScore],
+      (err) => {
+        if (err) {
+          console.error('Ошибка сохранения:', err);
+          return res.json({ 
+            finalScore: roundedScore, 
+            warning: 'Результат не сохранён в БД' 
+          });
+        }
+        res.json({ 
+          finalScore: roundedScore, 
+          saved: true,
+          message: 'Результат сохранён'
+        });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ error: 'Внутренняя ошибка сервера: ' + error.message });
+  }
+});
+
+app.post('/api/users', (req, res) => {
+  const { name, email, role } = req.body;
+  
+  if (!name || !email) {
+    return res.status(400).json({ error: 'Имя и email обязательны' });
+  }
+  
+  const userRole = role || 'student';
+  
+  db.run(`INSERT INTO users (name, email, role) VALUES (?, ?, ?)`,
+    [name, email, userRole],
+    function(err) {
+      if (err) {
+        if (err.message.includes('UNIQUE')) {
+          return res.status(400).json({ error: 'Email уже существует' });
+        }
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ 
+        id: this.lastID, 
+        name, 
+        email, 
+        role: userRole,
+        message: 'Пользователь создан' 
+      });
+    }
+  );
+});
+
+app.get('/api/students', (req, res) => {
+  db.all(`SELECT id, name, email, created_at FROM users WHERE role = 'student'`, 
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+app.get('/api/courses', (req, res) => {
+  db.all(`SELECT * FROM courses`, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/courses', (req, res) => {
+  const { title, description, weight } = req.body;
+  
+  if (!title) {
+    return res.status(400).json({ error: 'Название курса обязательно' });
+  }
+  
+  db.run(`INSERT INTO courses (title, description, weight) VALUES (?, ?, ?)`,
+    [title, description || '', weight || 1.0],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ id: this.lastID, title, message: 'Курс создан' });
+    }
+  );
+});
+
+app.post('/api/lessons', (req, res) => {
+  const { course_id, title, content, duration, order_number } = req.body;
+  
+  if (!course_id || !title) {
+    return res.status(400).json({ error: 'course_id и title обязательны' });
+  }
+  
+  db.run(`INSERT INTO lessons (course_id, title, content, duration, order_number) 
+          VALUES (?, ?, ?, ?, ?)`,
+    [course_id, title, content || '', duration || 0, order_number || 0],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ id: this.lastID, title, message: 'Урок добавлен' });
+    }
+  );
+});
+
+app.get('/api/courses/:courseId/lessons', (req, res) => {
+  const { courseId } = req.params;
+  
+  db.all(`SELECT * FROM lessons WHERE course_id = ? ORDER BY order_number`,
+    [courseId], 
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+app.get('/api/students/:studentId/results', (req, res) => {
+  const { studentId } = req.params;
+  
+  db.all(`SELECT 
+            c.title as course_title,
+            r.score,
+            r.completed_at,
+            CASE 
+              WHEN r.score >= 85 THEN 'Отлично'
+              WHEN r.score >= 70 THEN 'Хорошо'
+              WHEN r.score >= 50 THEN 'Удовлетворительно'
+              ELSE 'Неудовлетворительно'
+            END as grade
+          FROM results r
+          JOIN courses c ON r.course_id = c.id
+          WHERE r.user_id = ?
+          ORDER BY r.completed_at DESC`,
+    [studentId], 
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+app.get('/api/courses/:courseId/stats', (req, res) => {
+  const { courseId } = req.params;
+  
+  db.get(`SELECT 
+            COUNT(*) as total_students,
+            AVG(score) as avg_score,
+            MAX(score) as max_score,
+            MIN(score) as min_score,
+            SUM(CASE WHEN score >= 70 THEN 1 ELSE 0 END) as passed_count
+          FROM results 
+          WHERE course_id = ?`,
+    [courseId], 
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(row);
+    }
+  );
+});
+
+app.post('/api/progress', (req, res) => {
+  const { user_id, course_id, completed_lessons, total_lessons } = req.body;
+  
+  const status = completed_lessons === total_lessons ? 'completed' : 'in_progress';
+  
+  db.run(`INSERT OR REPLACE INTO user_progress 
+          (user_id, course_id, completed_lessons, total_lessons, status, last_accessed)
+          VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+    [user_id, course_id, completed_lessons || 0, total_lessons || 0, status],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ status, message: 'Прогресс обновлён' });
+    }
+  );
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`сервер запущен: http://localhost:${PORT}`);
+});
