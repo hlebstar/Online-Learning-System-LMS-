@@ -7,38 +7,73 @@ app.post('/api/calculate', (req, res) => {
   try {
     const { studentId, courseId, grades } = req.body;
     
-    if (!studentId || !courseId || !grades || !Array.isArray(grades)) {
+    // Валидация обязательных полей
+    if (!studentId || !courseId || !grades) {
       return res.status(400).json({ 
-        error: 'Ошибка: нужны studentId, courseId и grades (массив)' 
+        error: 'Ошибка: нужны studentId, courseId и grades' 
+      });
+    }
+    
+    if (!Array.isArray(grades)) {
+      return res.status(400).json({ 
+        error: 'Ошибка: grades должен быть массивом' 
       });
     }
     
     if (grades.length === 0) {
-      return res.status(400).json({ error: 'Ошибка: массив grades пуст' });
+      return res.status(400).json({ 
+        error: 'Ошибка: массив grades пуст' 
+      });
     }
     
+    // Валидация каждой оценки
     let totalScore = 0;
     let totalWeight = 0;
     
-    for (const grade of grades) {
-      if (typeof grade.value !== 'number' || typeof grade.weight !== 'number') {
-        return res.status(400).json({ error: 'Ошибка: value и weight должны быть числами' });
+    for (let i = 0; i < grades.length; i++) {
+      const grade = grades[i];
+      
+      // Проверка наличия полей
+      if (grade.value === undefined || grade.weight === undefined) {
+        return res.status(400).json({ 
+          error: `Ошибка: у оценки ${i} нет поля value или weight` 
+        });
       }
+      
+      // Проверка типа и диапазона
+      if (!validateGrade(grade.value)) {
+        return res.status(400).json({ 
+          error: `Ошибка: value=${grade.value} должен быть числом от 0 до 100` 
+        });
+      }
+      
+      if (!validateWeight(grade.weight)) {
+        return res.status(400).json({ 
+          error: `Ошибка: weight=${grade.weight} должен быть числом от 0 до 1` 
+        });
+      }
+      
       totalScore += grade.value * grade.weight;
       totalWeight += grade.weight;
     }
     
-    const finalScore = totalWeight > 0 ? totalScore / totalWeight : 0;
+    if (totalWeight === 0) {
+      return res.status(400).json({ 
+        error: 'Ошибка: сумма весов не может быть 0' 
+      });
+    }
+    
+    const finalScore = totalScore / totalWeight;
     const roundedScore = Math.round(finalScore * 100) / 100;
     
+    // Сохраняем в БД
     db.run(`INSERT INTO results (user_id, course_id, score) VALUES (?, ?, ?)`,
       [studentId, courseId, roundedScore],
       (err) => {
         if (err) {
-          console.error('Ошибка сохранения:', err);
           return res.json({ 
             finalScore: roundedScore, 
-            warning: 'Результат не сохранён в БД' 
+            warning: 'Результат не сохранён (возможно, нет студента или курса)' 
           });
         }
         res.json({ 
@@ -49,7 +84,7 @@ app.post('/api/calculate', (req, res) => {
       }
     );
   } catch (error) {
-    res.status(500).json({ error: 'Внутренняя ошибка сервера: ' + error.message });
+    res.status(500).json({ error: 'Внутренняя ошибка: ' + error.message });
   }
 });
 
@@ -218,6 +253,21 @@ app.post('/api/progress', (req, res) => {
     }
   );
 });
+
+function validateGrade(value) {
+  if (typeof value !== 'number') return false;
+  if (isNaN(value)) return false;
+  if (value < 0 || value > 100) return false;
+  return true;
+}
+
+function validateWeight(weight) {
+  if (typeof weight !== 'number') return false;
+  if (isNaN(weight)) return false;
+  if (weight < 0 || weight > 1) return false;
+  return true;
+}
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
