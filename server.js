@@ -1,13 +1,15 @@
 const express = require('express');
 const db = require('./database');
 const app = express();
+
+
+app.use(express.static('public'));
 app.use(express.json());
 
 app.post('/api/calculate', (req, res) => {
   try {
     const { studentId, courseId, grades } = req.body;
     
-    // Валидация обязательных полей
     if (!studentId || !courseId || !grades) {
       return res.status(400).json({ 
         error: 'Ошибка: нужны studentId, courseId и grades' 
@@ -26,21 +28,18 @@ app.post('/api/calculate', (req, res) => {
       });
     }
     
-    // Валидация каждой оценки
     let totalScore = 0;
     let totalWeight = 0;
     
     for (let i = 0; i < grades.length; i++) {
       const grade = grades[i];
       
-      // Проверка наличия полей
       if (grade.value === undefined || grade.weight === undefined) {
         return res.status(400).json({ 
           error: `Ошибка: у оценки ${i} нет поля value или weight` 
         });
       }
       
-      // Проверка типа и диапазона
       if (!validateGrade(grade.value)) {
         return res.status(400).json({ 
           error: `Ошибка: value=${grade.value} должен быть числом от 0 до 100` 
@@ -66,7 +65,6 @@ app.post('/api/calculate', (req, res) => {
     const finalScore = totalScore / totalWeight;
     const roundedScore = Math.round(finalScore * 100) / 100;
     
-    // Сохраняем в БД
     db.run(`INSERT INTO results (user_id, course_id, score) VALUES (?, ?, ?)`,
       [studentId, courseId, roundedScore],
       (err) => {
@@ -267,6 +265,44 @@ function validateWeight(weight) {
   if (weight < 0 || weight > 1) return false;
   return true;
 }
+
+
+//регистрация\авторизация 
+app.post('/api/register', (req, res) => {
+  const { name, email, password, role } = req.body;
+  
+  db.run(`INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)`,
+    [name, email, password, role || 'student'],
+    function(err) {
+      if (err) return res.json({ error: 'Ошибка: email уже есть' });
+      res.json({ id: this.lastID, name, email, ok: true });
+    }
+  );
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  db.get(`SELECT id, name, email, role FROM users WHERE email = ? AND password = ?`,
+    [email, password],
+    (err, user) => {
+      if (err || !user) return res.json({ error: 'Неверный логин или пароль' });
+      res.json({ user, ok: true });
+    }
+  );
+});
+
+app.get('/api/user/:id', (req, res) => {
+  const { id } = req.params;
+  
+  db.get(`SELECT id, name, email, role FROM users WHERE id = ?`,
+    [id],
+    (err, user) => {
+      if (err || !user) return res.json({ error: 'Пользователь не найден' });
+      res.json(user);
+    }
+  );
+});
 
 
 const PORT = 3000;

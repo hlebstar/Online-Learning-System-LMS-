@@ -1,0 +1,25 @@
+<h1>Вход</h1>
+<input id="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Пароль"><br>
+<button onclick="login()">Войти</button>
+<div id="msg"></div>
+
+<script>
+async function login() {
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value
+    })
+  });
+  const data = await res.json();
+  if(data.ok) {
+    localStorage.setItem('userId', data.user.id);
+    location.href = 'profile.html';
+  } else {
+    document.getElementById('msg').innerText = data.error;
+  }
+}
+</script>

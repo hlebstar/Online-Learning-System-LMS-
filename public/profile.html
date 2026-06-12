@@ -1,0 +1,23 @@
+<h1>Мой профиль</h1>
+<div id="info"></div>
+<button onclick="logout()">Выйти</button>
+
+<script>
+const userId = localStorage.getItem('userId');
+if(!userId) location.href = 'login.html';
+
+async function load() {
+  const res = await fetch(`/api/user/${userId}`);
+  const user = await res.json();
+  document.getElementById('info').innerHTML = `
+    <p>Имя: ${user.name}</p>
+    <p>Email: ${user.email}</p>
+    <p>Роль: ${user.role}</p>
+  `;
+}
+function logout() {
+  localStorage.clear();
+  location.href = 'index.html';
+}
+load();
+</script>
