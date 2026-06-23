@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Календарь - LMS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Raleway', sans-serif; background: #E8F4F8; min-height: 100vh; }
+
+        .mainn { padding: 0 50px; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0 20px;
+            border-bottom: 1px solid #C5DDE8;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header-left { display: flex; align-items: center; gap: 40px; }
+        .logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 22px; color: #1A3D4F; letter-spacing: 1px; text-decoration: none; }
+        .logo span { color: #5BA3C9; }
+        .nav-links { display: flex; gap: 30px; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; }
+        .nav-links a { color: #2C3E50; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: #2B5F7A; }
+        .header-right { display: flex; gap: 20px; align-items: center; }
+        .header-right a { font-weight: 700; font-size: 14px; text-decoration: none; transition: all 0.3s; letter-spacing: 0.5px; }
+        .header-right .login-link { color: #2B5F7A; }
+        .header-right .login-link:hover { color: #1A3D4F; text-decoration: underline; }
+        .header-right .register-link { color: #FFFFFF; background: #3A7B9E; padding: 10px 28px; border-radius: 30px; }
+        .header-right .register-link:hover { background: #2B5F7A; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(58,123,158,0.3); }
+
+        .header-right .avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 2px solid #5BA3C9;
+        }
+        .header-right .avatar-mini img { width: 100%; height: 100%; object-fit: cover; }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .calendar-wrapper { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+
+        .calendar {
+            background: #FFFFFF;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(43,95,122,0.08);
+            border: 1px solid #C5DDE8;
+        }
+
+        .calendar-nav {
+            background: #2B5F7A;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .calendar-nav button { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: all 0.3s; }
+        .calendar-nav button:hover { background: rgba(255,255,255,0.4); }
+        .calendar-nav h2 { font-size: 20px; color: white; }
+
+        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: #F0F6FA; border-bottom: 1px solid #C5DDE8; }
+        .weekday { padding: 12px; text-align: center; font-weight: bold; color: #2B5F7A; }
+
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); min-height: 400px; }
+
+        .calendar-day {
+            min-height: 80px;
+            border-right: 1px solid #F0F6FA;
+            border-bottom: 1px solid #F0F6FA;
+            padding: 6px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .calendar-day:hover { background: #F8FBFC; }
+        .calendar-day.other-month { background: #FAFAFA; color: #ccc; }
+        .calendar-day.today { background: #e8f4f8; }
+
+        .day-number { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
+        .day-events { font-size: 9px; margin-top: 3px; }
+
+        .event-badge {
+            padding: 2px 5px;
+            border-radius: 8px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 8px;
+            color: white;
+        }
+        .event-badge.student { background: #3A7B9E; }
+        .event-badge.teacher { background: #7FC1C5; color: #1A3D4F; }
+        .event-badge.curator { background: #F2C94C; color: #1A3D4F; }
+        .event-badge.admin { background: #c0392b; }
+        .event-badge.lesson { background: #27ae60; }
+
+        .sidebar {
+            background: #FFFFFF;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(43,95,122,0.08);
+            border: 1px solid #C5DDE8;
+        }
+        .sidebar h3 { color: #2B5F7A; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #7FC1C5; }
+
+        .event-list { max-height: 500px; overflow-y: auto; }
+
+        .event-item {
+            padding: 12px;
+            border-left: 4px solid #3A7B9E;
+            background: #F8FBFC;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .event-item.student { border-left-color: #3A7B9E; }
+        .event-item.teacher { border-left-color: #7FC1C5; }
+        .event-item.curator { border-left-color: #F2C94C; }
+        .event-item.admin { border-left-color: #c0392b; }
+
+        .event-item .event-user { font-size: 12px; font-weight: 600; color: #1A3D4F; }
+        .event-item .event-action { font-size: 13px; margin: 4px 0; }
+        .event-item .event-time { font-size: 11px; color: #7a9aa8; }
+        .event-item .event-role { font-size: 10px; padding: 2px 8px; border-radius: 12px; background: #F0F6FA; display: inline-block; }
+
+        .filter-buttons { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid #C5DDE8;
+            border-radius: 20px;
+            background: #F8FBFC;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Raleway', sans-serif;
+        }
+        .filter-btn:hover { background: #E8F4F8; border-color: #5BA3C9; }
+        .filter-btn.active { background: #2B5F7A; color: white; border-color: #2B5F7A; }
+
+        .footer-main {
+            background: #FFFFFF;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 60px 20px;
+            margin-top: 50px;
+            border-top: 1px solid #C5DDE8;
+            box-shadow: 0 -5px 30px rgba(43,95,122,0.04);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            max-width: 1400px;
+            margin: 0 auto 25px;
+        }
+
+        .footer-col h4 { font-weight: 700; font-size: 13px; color: #2B5F7A; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .footer-col p { font-size: 14px; line-height: 1.6; color: #2C3E50; margin: 0; }
+        .footer-col a { display: block; font-size: 14px; color: #2C3E50; text-decoration: none; padding: 3px 0; transition: color 0.3s; }
+        .footer-col a:hover { color: #2B5F7A; text-decoration: underline; }
+
+        .footer-logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 24px; color: #1A3D4F; margin-bottom: 8px; }
+        .footer-logo span { color: #5BA3C9; }
+        .footer-desc { font-size: 14px; color: #7a9aa8; line-height: 1.6; max-width: 220px; }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #EDE5D8;
+            border-bottom: 1px solid #EDE5D8;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+            color: #2C3E50;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
+        .footer-bottom-left .divider { color: #C5DDE8; }
+
+        .footer-bottom-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+        .footer-bottom-right a { color: #2B5F7A; text-decoration: none; font-weight: 600; }
+        .footer-bottom-right a:hover { text-decoration: underline; }
+
+        .footer-copy { text-align: center; padding-top: 15px; font-size: 13px; color: #7a9aa8; }
+
+        @media (max-width: 1024px) {
+            .calendar-wrapper { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 25px; }
+            .footer-main { padding: 30px 30px 15px; }
+        }
+
+        @media (max-width: 768px) {
+            .mainn { padding: 0 20px; }
+            .header { flex-direction: column; align-items: stretch; gap: 15px; padding: 20px 0; }
+            .header-left { flex-direction: column; align-items: stretch; gap: 12px; }
+            .nav-links { gap: 20px; font-size: 14px; flex-wrap: wrap; }
+            .header-right { justify-content: center; flex-wrap: wrap; }
+            .calendar-day { min-height: 60px; font-size: 12px; }
+            .calendar-days { min-height: 300px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 15px; }
+            .footer-main { padding: 25px 20px 12px; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .footer-desc { max-width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .mainn { padding: 0 12px; }
+            .header { padding: 15px 0; }
+            .nav-links { gap: 12px; font-size: 13px; }
+            .calendar-day { min-height: 50px; font-size: 10px; }
+            .event-badge { font-size: 7px; }
+            .sidebar { padding: 15px; }
+            .filter-btn { font-size: 10px; padding: 4px 10px; }
+            .footer-main { padding: 20px 15px 10px; border-radius: 16px 16px 0 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="mainn">
+
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">LMS<span>.</span></a>
+                <div class="nav-links">
+                    <a href="my-courses.html">Содержание</a>
+                    <a href="calendar.html">Календарь</a>
+                    <a href="courses.html">Курсы</a>
+                </div>
+            </div>
+            <div class="header-right" id="navRight">
+                <div id="guestNav">
+                    <a href="login.html" class="login-link">ВХОД</a>
+                    <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+                </div>
+                <div id="userNav" style="display:none;">
+                    <div class="avatar-mini" id="headerAvatar"><span id="headerAvatarText">-</span></div>
+                    <a href="profile.html" class="login-link" style="font-weight:600;"><span id="userNameDisplay">-</span></a>
+                    <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="calendar-wrapper">
+                <div class="calendar">
+                    <div class="calendar-nav">
+                        <button onclick="prevMonth()">←</button>
+                        <h2 id="monthYear"></h2>
+                        <button onclick="nextMonth()">→</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Пн</div><div class="weekday">Вт</div>
+                        <div class="weekday">Ср</div><div class="weekday">Чт</div>
+                        <div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays"></div>
+                </div>
+
+                <div class="sidebar">
+                    <h3> События</h3>
+                    <div class="filter-buttons" id="filterButtons">
+                        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Все</button>
+                        <button class="filter-btn" data-filter="student" onclick="setFilter('student', this)">Студенты</button>
+                        <button class="filter-btn" data-filter="teacher" onclick="setFilter('teacher', this)">Преподаватели</button>
+                        <button class="filter-btn" data-filter="curator" onclick="setFilter('curator', this)">Кураторы</button>
+                        <button class="filter-btn" data-filter="admin" onclick="setFilter('admin', this)">Админ</button>
+                    </div>
+                    <div class="event-list" id="eventList">
+                        <p style="color:#7a9aa8; text-align:center; padding:20px;">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+<footer class="footer-main">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">LMS<span>.</span></div>
+            <p class="footer-desc">Современная платформа для онлайн-обучения. Учись когда угодно, где угодно.</p>
+        </div>
+        <div class="footer-col">
+            <h4>EXPLORE</h4>
+            <a href="#">Home</a>
+            <a href="courses.html">Courses</a>
+            <a href="#">About</a>
+            <a href="#">Capabilities</a>
+            <a href="#">Careers</a>
+        </div>
+        <div class="footer-col">
+            <h4>VISIT</h4>
+            <p>LMS Learning Center<br>Великий Новгород<br>Большая Санкт-Петербургсакая 42</p>
+        </div>
+        <div class="footer-col">
+            <h4>FOLLOW</h4>
+            <a href="#">VK</a>
+            <a href="#">Telegram</a>
+            <a href="#">WatsApp</a>
+        </div>
+        <div class="footer-col">
+            <h4>LEGAL</h4>
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="footer-bottom-left">
+            <span>Оставайтесь с нами!</span>
+            <span class="divider">|</span>
+            <span>всегда на связи</span>
+        </div>
+        <div class="footer-bottom-right">
+            <span> Контактные данные</span>
+            <a href="mailto:engage@lms.com">lms@gmail.com</a>
+            <span>+7999-999-99-99</span>
+        </div>
+    </div>
+
+  
+
+</footer>
+
+    <script>
+        var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        var currentDate = new Date();
+        var currentFilter = 'all';
+        var allEvents = [];
+
+        function initNav() {
+            const userId = localStorage.getItem('userId');
+            const userName = localStorage.getItem('userName');
+
+            if (userId) {
+                document.getElementById('guestNav').style.display = 'none';
+                const userNav = document.getElementById('userNav');
+                userNav.style.display = 'flex';
+                userNav.style.alignItems = 'center';
+                userNav.style.gap = '15px';
+                document.getElementById('userNameDisplay').textContent = userName || 'Пользователь';
+                updateHeaderAvatar();
+            }
+        }
+
+        function updateHeaderAvatar() {
+            const email = localStorage.getItem('userEmail');
+            if (!email) return;
+            const users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            const user = users.find(u => u.email === email);
+            const headerAvatar = document.getElementById('headerAvatar');
+            const textSpan = document.getElementById('headerAvatarText');
+            headerAvatar.innerHTML = '';
+
+            if (user && user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    headerAvatar.innerHTML = '<span style="font-size:16px;">' + user.avatar.icon + '</span>';
+                    headerAvatar.style.background = user.avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (user.avatar.type === 'upload') {
+                    headerAvatar.innerHTML = '<img src="' + user.avatar.data + '" alt="Avatar">';
+                    headerAvatar.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else if (user) {
+                const parts = user.name.split(' ');
+                const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                textSpan.textContent = initials;
+                textSpan.style.display = 'block';
+                headerAvatar.style.background = '#2B5F7A';
+            }
+        }
+
+        function logout() {
+            if (confirm('Выйти из аккаунта?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        function getRealUsers() {
+            var users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина Иванова', email: 'katya@email.com', role: 'student', active: true },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', role: 'teacher', active: true },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', role: 'curator', active: true },
+                    { id: 4, name: 'Админ', email: 'admin@admin.com', role: 'admin', active: true }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+            return users;
+        }
+
+        function getRoleIcon(role) {
+            if (role === 'student') return '';
+            if (role === 'teacher') return '';
+            if (role === 'curator') return '';
+            if (role === 'admin') return '';
+            return '';
+        }
+
+        function getRoleLabel(role) {
+            if (role === 'student') return 'Студент';
+            if (role === 'teacher') return 'Преподаватель';
+            if (role === 'curator') return 'Куратор';
+            if (role === 'admin') return 'Администратор';
+            return role;
+        }
+
+        function getCourses() {
+            var courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            if (courses.length === 0) {
+                courses = [
+                    { id: 1, title: 'Введение в робототехнику' },
+                    { id: 2, title: 'Программирование роботов' },
+                    { id: 3, title: 'Сенсоры и актуаторы' },
+                    { id: 4, title: 'Промышленная робототехника' },
+                    { id: 5, title: 'Автономные системы и ИИ' }
+                ];
+                localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            }
+            return courses;
+        }
+
+        function getCourseProgress(courseId) {
+            var key = 'courseProgress_' + courseId;
+            var saved = localStorage.getItem(key);
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
+            }
+            return [];
+        }
+
+        function getEnrolledCourses() {
+            var saved = localStorage.getItem('enrolledCourses');
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
+            }
+            return [];
+        }
+
+        function getEvents() {
+            var saved = localStorage.getItem('calendar_events_all');
+            if (saved) {
+                try {
+                    var parsed = JSON.parse(saved);
+                    if (parsed.length > 0) {
+                        return parsed;
+                    }
+                } catch (e) {}
+            }
+
+            var users = getRealUsers();
+            var courses = getCourses();
+            var enrolled = getEnrolledCourses();
+            var events = [];
+            var today = new Date();
+
+            for (var u = 0; u < users.length; u++) {
+                var user = users[u];
+
+                if (user.role === 'student') {
+                    for (var c = 0; c < courses.length; c++) {
+                        var course = courses[c];
+                        var progress = getCourseProgress(course.id);
+                        var studentProgress = [];
+                        for (var p = 0; p < progress.length; p++) {
+                            if (progress[p].studentId === user.id) {
+                                studentProgress.push(progress[p]);
+                            }
+                        }
+                        for (var sp = 0; sp < studentProgress.length; sp++) {
+                            var p = studentProgress[sp];
+                            var date = new Date(today);
+                            date.setDate(date.getDate() - Math.floor(Math.random() * 10));
+                            events.push({
+                                id: Date.now() + Math.random(),
+                                userId: user.id,
+                                userName: user.name,
+                                userRole: user.role,
+                                action: p.completed ? 'завершил курс "' + course.title + '"' : 'проходит курс "' + course.title + '"',
+                                type: p.completed ? 'complete' : 'progress',
+                                date: date.toISOString().split('T')[0],
+                                time: '12:00',
+                                timestamp: date.getTime()
+                            });
+                        }
+                    }
+                }
+
+                if (user.role === 'teacher') {
+                    for (var c2 = 0; c2 < courses.length; c2++) {
+                        var course2 = courses[c2];
+                        var date = new Date(today);
+                        date.setDate(date.getDate() - Math.floor(Math.random() * 15));
+                        events.push({
+                            id: Date.now() + Math.random(),
+                            userId: user.id,
+                            userName: user.name,
+                            userRole: user.role,
+                            action: 'создал курс "' + course2.title + '"',
+                            type: 'course_create',
+                            date: date.toISOString().split('T')[0],
+                            time: '10:00',
+                            timestamp: date.getTime()
+                        });
+                    }
+                }
+
+                if (user.role === 'curator') {
+                    var date = new Date(today);
+                    date.setDate(date.getDate() - Math.floor(Math.random() * 7));
+                    events.push({
+                        id: Date.now() + Math.random(),
+                        userId: user.id,
+                        userName: user.name,
+                        userRole: user.role,
+                        action: 'проверил работы студентов',
+                        type: 'check',
+                        date: date.toISOString().split('T')[0],
+                        time: '14:00',
+                        timestamp: date.getTime()
+                    });
+                }
+
+                if (user.role === 'admin') {
+                    var date = new Date(today);
+                    date.setDate(date.getDate() - Math.floor(Math.random() * 5));
+                    events.push({
+                        id: Date.now() + Math.random(),
+                        userId: user.id,
+                        userName: user.name,
+                        userRole: user.role,
+                        action: 'управлял системой',
+                        type: 'admin_action',
+                        date: date.toISOString().split('T')[0],
+                        time: '09:00',
+                        timestamp: date.getTime()
+                    });
+                }
+
+                if (user.role === 'student') {
+                    for (var e = 0; e < enrolled.length; e++) {
+                        var course3 = enrolled[e];
+                        var date = new Date(today);
+                        date.setDate(date.getDate() - Math.floor(Math.random() * 20));
+                        events.push({
+                            id: Date.now() + Math.random(),
+                            userId: user.id,
+                            userName: user.name,
+                            userRole: user.role,
+                            action: 'записался на курс "' + course3.title + '"',
+                            type: 'enroll',
+                            date: date.toISOString().split('T')[0],
+                            time: '11:00',
+                            timestamp: date.getTime()
+                        });
+                    }
+                }
+            }
+
+            events.sort(function(a, b) { return b.timestamp - a.timestamp; });
+            localStorage.setItem('calendar_events_all', JSON.stringify(events));
+            return events;
+        }
+
+        function addActivity(userId, userName, userRole, action, type) {
+            var events = getEvents();
+            var today = new Date();
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+
+            var event = {
+                id: Date.now() + Math.random(),
+                userId: userId,
+                userName: userName,
+                userRole: userRole,
+                action: action,
+                type: type || 'activity',
+                date: today.toISOString().split('T')[0],
+                time: String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0'),
+                timestamp: today.getTime()
+            };
+
+            events.unshift(event);
+            localStorage.setItem('calendar_events_all', JSON.stringify(events));
+            allEvents = events;
+            renderCalendar();
+            renderEvents();
+        }
+
+        function renderCalendar() {
+            allEvents = getEvents();
+
+            var year = currentDate.getFullYear();
+            var month = currentDate.getMonth();
+
+            var firstDay = new Date(year, month, 1);
+            var startOffset = (firstDay.getDay() + 6) % 7;
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+            var prevMonthDays = new Date(year, month, 0).getDate();
+            var today = new Date();
+            var todayStr = today.toISOString().split('T')[0];
+
+            document.getElementById('monthYear').innerHTML = monthNames[month] + ' ' + year;
+
+            var daysHtml = '';
+
+            for (var i = startOffset - 1; i >= 0; i--) {
+                var day = prevMonthDays - i;
+                var dateStr = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                daysHtml += renderDay(day, true, false, dateStr);
+            }
+
+            for (var day = 1; day <= daysInMonth; day++) {
+                var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                var isToday = dateStr === todayStr;
+                daysHtml += renderDay(day, false, isToday, dateStr);
+            }
+
+            var totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+            for (var i = startOffset + daysInMonth + 1; i <= totalCells; i++) {
+                var day = i - startOffset - daysInMonth;
+                var dateStr = year + '-' + String(month + 2).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                daysHtml += renderDay(day, true, false, dateStr);
+            }
+
+            document.getElementById('calendarDays').innerHTML = daysHtml;
+            renderEvents();
+        }
+
+        function renderDay(day, isOtherMonth, isToday, dateStr) {
+            var classes = 'calendar-day';
+            if (isOtherMonth) classes += ' other-month';
+            if (isToday) classes += ' today';
+
+            var dayEvents = [];
+            for (var e = 0; e < allEvents.length; e++) {
+                if (allEvents[e].date === dateStr) {
+                    dayEvents.push(allEvents[e]);
+                }
+            }
+
+            var eventsHtml = '';
+            var displayEvents = dayEvents.slice(0, 4);
+
+            for (var i = 0; i < displayEvents.length; i++) {
+                var ev = displayEvents[i];
+                var typeClass = 'student';
+                if (ev.userRole === 'teacher') typeClass = 'teacher';
+                else if (ev.userRole === 'curator') typeClass = 'curator';
+                else if (ev.userRole === 'admin') typeClass = 'admin';
+                else if (ev.type === 'test' || ev.type === 'theory' || ev.type === 'task') typeClass = 'lesson';
+
+                var shortName = ev.userName.length > 10 ? ev.userName.substring(0, 8) + '…' : ev.userName;
+                eventsHtml += '<div class="event-badge ' + typeClass + '">' + getRoleIcon(ev.userRole) + ' ' + shortName + ': ' + ev.action.substring(0, 12) + '</div>';
+            }
+
+            if (dayEvents.length > 4) {
+                eventsHtml += '<div style="font-size:8px; color:#999;">+' + (dayEvents.length - 4) + ' ещё</div>';
+            }
+
+            return '<div class="' + classes + '"><div class="day-number">' + day + '</div><div class="day-events">' + eventsHtml + '</div></div>';
+        }
+
+        function renderEvents() {
+            var list = document.getElementById('eventList');
+
+            var filtered = [];
+            if (currentFilter === 'all') {
+                filtered = allEvents.slice(0);
+            } else {
+                for (var e = 0; e < allEvents.length; e++) {
+                    if (allEvents[e].userRole === currentFilter) {
+                        filtered.push(allEvents[e]);
+                    }
+                }
+            }
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            var todayEvents = [];
+            for (var f = 0; f < filtered.length; f++) {
+                if (new Date(filtered[f].date) >= today) {
+                    todayEvents.push(filtered[f]);
+                }
+            }
+
+            var recentEvents = todayEvents.slice(0, 15);
+
+            if (recentEvents.length === 0) {
+                list.innerHTML = '<p style="color:#7a9aa8; text-align:center; padding:20px;">Нет событий</p>';
+                return;
+            }
+
+            var html = '';
+            for (var r = 0; r < recentEvents.length; r++) {
+                var ev = recentEvents[r];
+                var date = new Date(ev.date);
+                var dateStr = date.toDateString() === today.toDateString() ? 'Сегодня' : date.toLocaleDateString('ru-RU');
+                var typeClass = ev.userRole || 'student';
+
+                html += '<div class="event-item ' + typeClass + '">' +
+                    '<div class="event-user">' +
+                    getRoleIcon(ev.userRole) + ' ' + ev.userName +
+                    '<span class="event-role">' + getRoleLabel(ev.userRole) + '</span>' +
+                    '</div>' +
+                    '<div class="event-action">' + ev.action + '</div>' +
+                    '<div class="event-time">' + dateStr + ' в ' + ev.time + '</div>' +
+                    '</div>';
+            }
+
+            list.innerHTML = html;
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+
+            var buttons = document.querySelectorAll('.filter-btn');
+            for (var b = 0; b < buttons.length; b++) {
+                buttons[b].classList.remove('active');
+            }
+
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                var activeBtn = document.querySelector('.filter-btn[data-filter="' + filter + '"]');
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+
+            renderEvents();
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            initNav();
+            allEvents = getEvents();
+            renderCalendar();
+        });
+
+        window.addActivity = addActivity;
+        window.getEvents = getEvents;
+        window.getCourses = getCourses;
+        window.getRealUsers = getRealUsers;
+    </script>
+
+</body>
+</html>

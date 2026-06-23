@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+
+<body>
+    
+<div class="header">
+    <div class="header-left">
+        <a href="index.html" class="logo">LMS<span>.</span></a>
+        <div class="nav-links">
+            <a href="courses.html">Курсы</a>
+            <a href="my-courses.html">Мои курсы</a>
+            <a href="calendar.html">Календарь</a>
+        </div>
+    </div>
+    <div class="header-right" id="navRight">
+        <div id="guestNav">
+            <a href="login.html" class="login-link">ВХОД</a>
+            <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+        </div>
+        <div id="userNav" style="display:none;">
+            <a href="profile.html" class="login-link" style="font-weight:600;"> <span id="userNameDisplay">-</span></a>
+            <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function initNav() {
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        
+        if (userId) {
+            const guestNav = document.getElementById('guestNav');
+            const userNav = document.getElementById('userNav');
+            if (guestNav) guestNav.style.display = 'none';
+            if (userNav) {
+                userNav.style.display = 'flex';
+                const nameSpan = document.getElementById('userNameDisplay');
+                if (nameSpan) nameSpan.textContent = userName || 'Пользователь';
+            }
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+    document.addEventListener('DOMContentLoaded', initNav);
+</script>
+
+
+
+</body>
+</html>

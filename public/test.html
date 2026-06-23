@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тестирование - LMS</title>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            background: linear-gradient(135deg, #2D3561, #1a2345);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .test-header h1 { font-size: 28px; margin-bottom: 10px; }
+        .test-header p { opacity: 0.9; }
+        
+        .test-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .test-content {
+            padding: 30px;
+        }
+        
+        .question-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #2D3561;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover { background: #f5f5f5; border-color: #2D3561; }
+        .option.selected { background: #e8f4fd; border-color: #2D3561; }
+        .option input { cursor: pointer; }
+        
+        .test-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #2D3561; color: white; }
+        .btn-primary:hover { background: #1a2345; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #219a52; }
+        .btn-warning { background: #F2C94C; color: #2D3561; }
+        
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .result-passed { color: #27ae60; }
+        .result-failed { color: #e74c3c; }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .test-content { padding: 20px; }
+            .question-text { font-size: 16px; }
+            .btn { padding: 10px 15px; }
+            .test-actions { flex-wrap: wrap; gap: 10px; }
+            .test-actions button { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>📝 Тестирование</h1>
+            <p>Проверьте свои знания</p>
+        </div>
+        
+        <div class="test-info">
+            <div>Вопросов: <strong id="totalQuestions">0</strong></div>
+            <div>Правильных ответов: <strong id="correctAnswers">0</strong></div>
+            <div>Осталось времени: <span id="timer" class="timer">00:00</span></div>
+        </div>
+        
+        <div class="test-content">
+            <div id="questionsContainer"></div>
+            
+            <div class="test-actions">
+                <button class="btn btn-primary" onclick="prevQuestion()" id="prevBtn" style="display:none;">← Назад</button>
+                <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">Далее →</button>
+                <button class="btn btn-success" onclick="submitTest()" id="submitBtn" style="display:none;">✅ Завершить тест</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Класс для управления тестом (без приватных полей для совместимости)
+        class TestManager {
+            constructor(questions = null) {
+                this.questions = [];
+                this.userAnswers = [];
+                this.currentIndex = 0;
+                this.timeLimit = 300;
+                this.timer = null;
+                this.onCorrectUpdateCallback = null;
+                
+                if (questions) {
+                    this.questions = questions;
+                    this.userAnswers = new Array(questions.length).fill(null);
+                } else {
+                    this.loadDefaultQuestions();
+                }
+            }
+            
+            loadDefaultQuestions() {
+                this.questions = [
+                    {
+                        id: 1,
+                        text: "Что означает аббревиатура LMS?",
+                        options: [
+                            "Learning Management System",
+                            "Local Memory Storage",
+                            "Logical Management System",
+                            "Language Module System"
+                        ],
+                        correct: 0
+                    },
+                    {
+                        id: 2,
+                        text: "Какой метод HTTP используется для получения данных в REST API?",
+                        options: ["POST", "GET", "PUT", "DELETE"],
+                        correct: 1
+                    },
+                    {
+                        id: 3,
+                        text: "Что такое SQLite?",
+                        options: [
+                            "Реляционная СУБД",
+                            "Язык программирования",
+                            "Веб-фреймворк",
+                            "Графический редактор"
+                        ],
+                        correct: 0
+                    },
+                    {
+                        id: 4,
+                        text: "Какой принцип ООП означает скрытие данных?",
+                        options: ["Наследование", "Полиморфизм", "Инкапсуляция", "Абстракция"],
+                        correct: 2
+                    },
+                    {
+                        id: 5,
+                        text: "Какой порт используется по умолчанию для HTTP?",
+                        options: ["80", "443", "8080", "3000"],
+                        correct: 0
+                    }
+                ];
+                this.userAnswers = new Array(this.questions.length).fill(null);
+            }
+            
+            getTotalQuestions() { return this.questions.length; }
+            getCurrentQuestion() { return this.questions[this.currentIndex]; }
+            getCurrentIndex() { return this.currentIndex + 1; }
+            hasNext() { return this.currentIndex < this.questions.length - 1; }
+            hasPrev() { return this.currentIndex > 0; }
+            
+            nextQuestion() {
+                if (this.hasNext()) {
+                    this.currentIndex++;
+                    return true;
+                }
+                return false;
+            }
+            
+            prevQuestion() {
+                if (this.hasPrev()) {
+                    this.currentIndex--;
+                    return true;
+                }
+                return false;
+            }
+            
+            setAnswer(answer) {
+                if (answer !== null && (answer < 0 || answer >= this.questions[this.currentIndex].options.length)) {
+                    throw new Error('Некорректный ответ');
+                }
+                this.userAnswers[this.currentIndex] = answer;
+                this.updateCorrectCount();
+            }
+            
+            getCurrentAnswer() {
+                return this.userAnswers[this.currentIndex];
+            }
+            
+            updateCorrectCount() {
+                let correct = 0;
+                for (let i = 0; i < this.userAnswers.length; i++) {
+                    if (this.userAnswers[i] !== null && this.userAnswers[i] === this.questions[i].correct) {
+                        correct++;
+                    }
+                }
+                if (this.onCorrectUpdateCallback) {
+                    this.onCorrectUpdateCallback(correct);
+                }
+            }
+            
+            onCorrectUpdate(callback) {
+                this.onCorrectUpdateCallback = callback;
+            }
+            
+            calculateResult() {
+                let correct = 0;
+                const results = [];
+                
+                for (let i = 0; i < this.questions.length; i++) {
+                    const isCorrect = this.userAnswers[i] !== null && 
+                                     this.userAnswers[i] === this.questions[i].correct;
+                    if (isCorrect) correct++;
+                    results.push({
+                        question: this.questions[i].text,
+                        userAnswer: this.userAnswers[i] !== null ? this.questions[i].options[this.userAnswers[i]] : 'Не отвечен',
+                        correctAnswer: this.questions[i].options[this.questions[i].correct],
+                        isCorrect: isCorrect
+                    });
+                }
+                
+                const score = (correct / this.questions.length) * 100;
+                const roundedScore = Math.round(score * 100) / 100;
+                const passed = roundedScore >= 70;
+                
+                return {
+                    score: roundedScore,
+                    correctAnswers: correct,
+                    totalQuestions: this.questions.length,
+                    passed: passed,
+                    details: results
+                };
+            }
+            
+            startTimer(onTick, onEnd) {
+                let timeLeft = this.timeLimit;
+                
+                if (this.timer) clearInterval(this.timer);
+                
+                this.timer = setInterval(() => {
+                    timeLeft--;
+                    if (onTick) onTick(timeLeft);
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        if (onEnd) onEnd();
+                    }
+                }, 1000);
+            }
+            
+            stopTimer() {
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }
+        }
+        
+// Инициализация тестов
+const test = new TestManager();
+        
+function renderQuestion() {
+    const question = test.getCurrentQuestion();
+    const currentAnswer = test.getCurrentAnswer();
+    const total = test.getTotalQuestions();
+    const currentNum = test.getCurrentIndex();
+            
+    let optionsHtml = '';
+    question.options.forEach((opt, idx) => {
+        const isSelected = currentAnswer === idx;
+        optionsHtml += `
+            <div class="option ${isSelected ? 'selected' : ''}" onclick="selectOption(${idx})">
+                <input type="radio" name="question" value="${idx}" ${isSelected ? 'checked' : ''}>
+                <span>${escapeHtml(opt)}</span>
+                </div>
+            `;
+    });
+            
+    document.getElementById('questionsContainer').innerHTML = `
+        <div class="question-card">
+        <div class="question-number">Вопрос ${currentNum} из ${total}</div>
+        <div class="question-text">${escapeHtml(question.text)}</div>
+        <div class="options">
+            ${optionsHtml}
+        </div>
+    </div>
+`;
+            
+// Управление кнопками
+document.getElementById('prevBtn').style.display = test.hasPrev() ? 'block' : 'none';
+const isLast = !test.hasNext();
+    document.getElementById('nextBtn').style.display = isLast ? 'none' : 'block';
+    document.getElementById('submitBtn').style.display = isLast ? 'block' : 'none';
+}
+        
+        function selectOption(optionIndex) {
+            test.setAnswer(optionIndex);
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (test.nextQuestion()) {
+                renderQuestion();
+            }
+        }
+        
+        function prevQuestion() {
+            if (test.prevQuestion()) {
+                renderQuestion();
+            }
+        }
+        
+        function submitTest() {
+            test.stopTimer();
+            const result = test.calculateResult();
+            
+            // Сохраняем результат
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        studentId: parseInt(userId),
+                        courseId: 1,
+                        grades: [{ value: result.score, weight: 1.0 }]
+                    })
+                }).catch(e => console.log('Ошибка сохранения:', e));
+            }
+            
+            // Показываем результат
+            showResultModal(result);
+        }
+        
+        function showResultModal(result) {
+            const modalHtml = `
+                <div class="result-modal" onclick="this.remove()">
+                    <div class="result-card" onclick="event.stopPropagation()">
+                        <div style="font-size: 48px;">${result.passed ? '' : ''}</div>
+                        <h2>${result.passed ? 'Поздравляем!' : 'Попробуйте ещё раз'}</h2>
+                        <div class="result-score ${result.passed ? 'result-passed' : 'result-failed'}">${result.score}%</div>
+                        <p>Правильных ответов: ${result.correctAnswers} из ${result.totalQuestions}</p>
+                        ${result.passed ? '<p>Тест пройден!</p>' : '<p> Тест не пройден. Нужно 70% для зачёта.</p>'}
+                        <button class="btn btn-primary" style="margin-top: 20px;" onclick="window.location.href=\'courses.html\'">Вернуться к курсам</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        function formatTime(seconds) {
+            if (seconds < 0) seconds = 0;
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Запуск
+        document.getElementById('totalQuestions').textContent = test.getTotalQuestions();
+        test.onCorrectUpdate((correct) => {
+            document.getElementById('correctAnswers').textContent = correct;
+        });
+        
+        test.startTimer(
+            (timeLeft) => {
+                document.getElementById('timer').textContent = formatTime(timeLeft);
+            },
+            () => {
+                alert(' Время вышло! Тест автоматически завершается.');
+                submitTest();
+            }
+        );
+        
+        renderQuestion();
+    </script>
+</body>
+</html>

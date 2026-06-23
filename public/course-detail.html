@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Курс - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; min-height: 100vh; }
+        body { font-family: 'Raleway', sans-serif; background: #E8F4F8; padding: 0; margin: 0; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 50px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #C5DDE8;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+        }
+        .header-left { display: flex; align-items: center; gap: 40px; }
+        .logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 22px; color: #1A3D4F; letter-spacing: 1px; text-decoration: none; }
+        .logo span { color: #5BA3C9; }
+        .nav-links { display: flex; gap: 30px; font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; }
+        .nav-links a { color: #2C3E50; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: #2B5F7A; }
+        .header-right { display: flex; gap: 20px; align-items: center; }
+        .header-right a { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 14px; text-decoration: none; transition: all 0.3s; letter-spacing: 0.5px; }
+        .header-right .login-link { color: #2B5F7A; }
+        .header-right .login-link:hover { color: #1A3D4F; text-decoration: underline; }
+        .header-right .register-link { color: #FFFFFF; background: #3A7B9E; padding: 10px 28px; border-radius: 30px; }
+        .header-right .register-link:hover { background: #2B5F7A; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(58, 123, 158, 0.3); }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: stretch; gap: 15px; padding: 15px 20px; }
+            .header-left { flex-direction: column; align-items: stretch; gap: 12px; }
+            .nav-links { gap: 20px; font-size: 14px; flex-wrap: wrap; }
+            .header-right { justify-content: center; flex-wrap: wrap; }
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            gap: 0;
+            align-items: flex-start;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+
+        .sidebar {
+            flex: 0 0 220px;
+            background: #FFFFFF;
+            border-right: 1px solid #C5DDE8;
+            padding: 20px 16px;
+            min-height: calc(100vh - 80px);
+            box-shadow: 2px 0 10px rgba(43, 95, 122, 0.03);
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+        }
+
+        .sidebar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #EDE5D8;
+            margin-bottom: 16px;
+        }
+        .sidebar .user-info .avatar { width: 40px; height: 40px; border-radius: 50%; background: #2B5F7A; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+        .sidebar .user-info .user-name { font-size: 14px; font-weight: 700; color: #1A3D4F; }
+        .sidebar .user-info .user-role { font-size: 12px; color: #7a9aa8; }
+
+        .sidebar .search-box { width: 100%; padding: 8px 14px; border: 1px solid #C5DDE8; border-radius: 30px; font-size: 13px; font-family: 'Raleway', sans-serif; background: #F8FBFC; color: #2C3E50; margin-bottom: 16px; transition: 0.3s; }
+        .sidebar .search-box:focus { outline: none; border-color: #5BA3C9; background: #FFFFFF; }
+        .sidebar .search-box::placeholder { color: #aaa; }
+
+        .sidebar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2C3E50;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .sidebar .menu-item:hover { background: #F0F6FA; color: #2B5F7A; }
+        .sidebar .menu-item.active { background: #2B5F7A; color: #fff; }
+        .sidebar .menu-item .icon { width: 20px; text-align: center; font-size: 15px; }
+        .sidebar .menu-divider { border: none; border-top: 1px solid #EDE5D8; margin: 12px 0; }
+
+        .main-content {
+            flex: 1;
+            padding: 30px 50px 30px 40px;
+            background: #E8F4F8;
+            min-height: calc(100vh - 80px);
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-wrapper { flex-direction: column; }
+            .sidebar { flex: 1; width: 100%; border-right: none; border-bottom: 1px solid #C5DDE8; min-height: auto; position: static; padding: 16px 20px; }
+            .main-content { padding: 20px; }
+        }
+        @media (max-width: 768px) { .main-content { padding: 15px; } .sidebar { padding: 16px; } }
+
+        .course-info {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #C5DDE8;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .course-info .course-title { font-size: 26px; font-weight: 700; color: #1A3D4F; margin-bottom: 8px; }
+        .course-info .course-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; color: #7a9aa8; margin-bottom: 12px; }
+        .course-info .course-desc { color: #2C3E50; font-size: 15px; line-height: 1.7; }
+
+        .progress-section {
+            background: #F8FBFC; border-radius: 12px; padding: 16px 20px;
+            margin: 15px 0; border: 1px solid #EDE5D8;
+        }
+        .progress-section .progress-label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #2C3E50; margin-bottom: 6px; }
+        .progress-bar { background: #F0F6FA; border-radius: 10px; height: 8px; overflow: hidden; }
+        .progress-bar .fill { height: 100%; border-radius: 10px; background: #7FC1C5; transition: width 0.5s; }
+
+        .lessons-section h2 { font-size: 20px; font-weight: 700; color: #1A3D4F; margin-bottom: 16px; }
+
+        .lesson-block {
+            background: #FFFFFF; border-radius: 14px; padding: 18px 22px;
+            margin-bottom: 12px; border: 1px solid #C5DDE8; transition: 0.3s;
+        }
+        .lesson-block.completed { border-color: #7FC1C5; background: #F0F9F5; }
+        .lesson-block .lesson-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .lesson-block .lesson-header .lesson-title { font-weight: 600; color: #1A3D4F; font-size: 15px; }
+        .lesson-block .lesson-header .lesson-status { font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; }
+        .lesson-status.done { background: #E8F5E9; color: #388E3C; }
+        .lesson-status.pending { background: #FFF3E0; color: #E65100; }
+        .lesson-status.locked { background: #F5F5F5; color: #999; }
+        .lesson-block .lesson-desc { font-size: 14px; color: #2C3E50; margin: 8px 0 12px; line-height: 1.5; }
+        .lesson-block .lesson-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn { padding: 8px 20px; border: none; border-radius: 10px; font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+        .btn-theory { background: #3498db; color: #fff; }
+        .btn-theory:hover { background: #2980b9; }
+        .btn-test { background: #F2C94C; color: #1A3D4F; }
+        .btn-test:hover { background: #e0b530; }
+        .btn-task { background: #7FC1C5; color: #1A3D4F; }
+        .btn-task:hover { background: #6db3b7; }
+        .btn-primary { background: #2B5F7A; color: #fff; }
+        .btn-primary:hover { background: #1A3D4F; }
+        .btn-success { background: #1A6B4A; color: #fff; }
+        .btn-success:hover { background: #145a3d; }
+        .btn-outline { background: transparent; border: 1.5px solid #C5DDE8; color: #2C3E50; }
+        .btn-outline:hover { border-color: #5BA3C9; background: #F8FBFC; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: #FFFFFF; border-radius: 24px; padding: 35px; max-width: 750px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-content h2 { font-size: 22px; font-weight: 700; color: #1A3D4F; margin-bottom: 8px; }
+        .modal-content .subtitle { color: #7a9aa8; margin-bottom: 20px; }
+        .modal-close { float: right; background: none; border: none; font-size: 28px; cursor: pointer; color: #7a9aa8; transition: 0.3s; }
+        .modal-close:hover { color: #1A3D4F; }
+
+        .test-option { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid #C5DDE8; cursor: pointer; transition: all 0.3s; margin-bottom: 6px; }
+        .test-option:hover { background: #E8F4F8; border-color: #5BA3C9; }
+        .test-option.selected { background: #E3F2FD; border-color: #2B5F7A; }
+        .test-option.correct { background: #E8F5E9; border-color: #27ae60; }
+        .test-option.wrong { background: #FDE8E8; border-color: #c0392b; }
+        .test-option input[type="radio"] { cursor: pointer; }
+        .test-option .explanation { font-size: 13px; color: #2C3E50; margin-top: 6px; display: none; padding: 8px; background: #F8FBFC; border-radius: 8px; }
+        .test-option .explanation.show { display: block; }
+
+        .task-code-block { background: #1A1A2E; color: #fff; padding: 16px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 13px; overflow-x: auto; margin: 10px 0; white-space: pre-wrap; }
+        .task-code-block .code-editor { background: transparent; color: #fff; border: none; outline: none; font-family: 'Courier New', monospace; font-size: 13px; width: 100%; min-height: 120px; resize: vertical; padding: 0; margin: 0; white-space: pre-wrap; tab-size: 2; }
+        .task-code-block .code-editor:focus { outline: none; }
+        .task-code-block .code-wrapper { display: flex; gap: 8px; }
+        .task-code-block .code-content { flex: 1; overflow-x: auto; }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; padding: 14px 28px;
+            border-radius: 12px; font-size: 14px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(100px); opacity: 0; transition: all 0.4s ease;
+            z-index: 999; color: #fff; max-width: 400px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #1A6B4A; }
+        .toast.error { background: #c0392b; }
+        .toast.info { background: #2B5F7A; }
+
+        .footer-main {
+            background: #FFFFFF;
+            border-radius: 30px 30px 0 0;
+            border-top: 1px solid #C5DDE8;
+            padding: 40px 60px 20px;
+            width: 100%;
+            box-shadow: 0 -5px 30px rgba(43, 95, 122, 0.04);
+        }
+        .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr; gap: 20px; margin-bottom: 25px; max-width: 1400px; margin: 0 auto 25px; }
+        .footer-col h4 { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 13px; color: #2B5F7A; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .footer-col p { font-size: 14px; line-height: 1.6; color: #2C3E50; margin: 0; }
+        .footer-col a { display: block; font-size: 14px; color: #2C3E50; text-decoration: none; padding: 3px 0; transition: color 0.3s; }
+        .footer-col a:hover { color: #2B5F7A; text-decoration: underline; }
+        .footer-logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 24px; color: #1A3D4F; margin-bottom: 8px; }
+        .footer-logo span { color: #5BA3C9; }
+        .footer-desc { font-size: 14px; color: #7a9aa8; line-height: 1.6; max-width: 220px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid #EDE5D8; border-bottom: 1px solid #EDE5D8; flex-wrap: wrap; gap: 10px; font-size: 14px; color: #2C3E50; max-width: 1400px; margin: 0 auto; }
+        .footer-bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; font-family: 'Raleway', sans-serif; }
+        .footer-bottom-left .divider { color: #C5DDE8; }
+        .footer-bottom-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+        .footer-bottom-right a { color: #2B5F7A; text-decoration: none; font-weight: 600; }
+        .footer-bottom-right a:hover { text-decoration: underline; }
+        .footer-copy { text-align: center; padding-top: 15px; font-size: 13px; color: #7a9aa8; }
+
+        @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 25px; } .footer-main { padding: 30px 30px 15px; } }
+        @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; gap: 15px; } .footer-main { padding: 25px 20px 12px; } .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; } .footer-desc { max-width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== ШАПКА ===== -->
+    <div id="header-placeholder"></div>
+    <script>
+        fetch('header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                initNav();
+            });
+    </script>
+
+    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <div class="dashboard-wrapper">
+
+        <aside class="sidebar">
+            <input class="search-box" type="text" placeholder="Поиск...">
+
+            <a href="my-courses.html" class="menu-item">
+                <span class="icon"><i class="fas fa-th-large"></i></span>
+                Мои курсы
+            </a>
+            <a href="courses.html" class="menu-item active">
+                <span class="icon"><i class="fas fa-book"></i></span>
+                Все курсы
+            </a>
+            <a href="calendar.html" class="menu-item">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                Календарь
+            </a>
+            <a href="profile.html" class="menu-item">
+                <span class="icon"><i class="fas fa-user"></i></span>
+                Профиль
+            </a>
+
+            <hr class="menu-divider">
+
+            <a href="#" class="menu-item" onclick="logout()">
+                <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                Выйти
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div id="courseContent"></div>
+        </main>
+
+    </div>
+
+    <!-- ===== ПОДВАЛ ===== -->
+    <div id="footer-placeholder"></div>
+    <script>
+        fetch('footer.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('footer-placeholder').innerHTML = data;
+            });
+    </script>
+
+    <script>
+        function updateSidebar() {
+            const userName = localStorage.getItem('userName') || 'Пользователь';
+            const userRole = localStorage.getItem('userRole') || 'student';
+
+            const nameEl = document.getElementById('sidebarName');
+            const avatarEl = document.getElementById('sidebarAvatar');
+            const roleEl = document.getElementById('sidebarRole');
+
+            if (nameEl) nameEl.textContent = userName;
+            if (avatarEl) {
+                const parts = userName.split(' ');
+                avatarEl.textContent = parts.length >= 2 ?
+                    (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() :
+                    userName.substring(0, 2).toUpperCase();
+            }
+            if (roleEl) {
+                const roleMap = { 'student': 'Студент', 'teacher': 'Преподаватель', 'curator': 'Куратор', 'admin': 'Администратор' };
+                roleEl.textContent = roleMap[userRole] || 'Пользователь';
+            }
+        }
+
+        function initNav() {
+            const userId = localStorage.getItem('userId');
+            const guestNav = document.getElementById('guestNav');
+            const userNav = document.getElementById('userNav');
+
+            if (userId) {
+                if (guestNav) guestNav.style.display = 'none';
+                if (userNav) {
+                    userNav.style.display = 'flex';
+                    const nameSpan = document.getElementById('userNameDisplay');
+                    if (nameSpan) nameSpan.textContent = localStorage.getItem('userName') || 'Пользователь';
+                }
+            } else {
+                if (guestNav) guestNav.style.display = 'flex';
+                if (userNav) userNav.style.display = 'none';
+            }
+            updateSidebar();
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // ============================================================
+        // ДАННЫЕ КУРСОВ
+        // ============================================================
+        var coursesFullData = [
+            {
+                id: 1,
+                title: 'Введение в робототехнику',
+                description: 'Изучите основы робототехники: контроллеры, датчики, первые программы. Модуль вводит в изучение робототехнических систем.',
+                duration: '2 недели',
+                level: 'Начинающий',
+                weight: 1.0,
+                lessons: [
+                    { id: 101, title: 'Что такое робототехника?', desc: 'Определение, история, направления', type: 'theory', content: 'Робототехника — это прикладная наука...', completed: false, skill: 'Основы' },
+                    { id: 102, title: 'Тест: Основы робототехники', desc: 'Проверьте свои знания', type: 'test', questions: [
+                        { text: 'Что такое робот?', options: ['Механическое устройство', 'Программа', 'Система управления', 'Все вышеперечисленное'], correct: 3 },
+                        { text: 'Какой язык чаще всего используется в Arduino?', options: ['Python', 'C++', 'Java', 'JavaScript'], correct: 1 },
+                        { text: 'Что такое микроконтроллер?', options: ['Компактный компьютер на одном чипе', 'Большой сервер', 'Операционная система', 'База данных'], correct: 0 },
+                        { text: 'Для чего нужны датчики в роботе?', options: ['Для получения информации об окружении', 'Для движения', 'Для связи с интернетом', 'Для хранения данных'], correct: 0 },
+                        { text: 'Какой датчик измеряет расстояние?', options: ['Ультразвуковой', 'Датчик освещенности', 'Гироскоп', 'Акселерометр'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 103, title: 'Задание: Собрать схему с LED', desc: 'Соберите схему с мигающим светодиодом', type: 'task', completed: false, skill: 'Схемотехника', taskDescription: 'Подключите светодиод через резистор 220 Ом к пину 13 и GND.', taskCheck: 'Схема собрана и светодиод мигает', codeTemplate: 'void setup() { pinMode(13, OUTPUT); }\n\nvoid loop() {\n  digitalWrite(13, HIGH);\n  delay(1000);\n  digitalWrite(13, LOW);\n  delay(1000);\n}', codeSolution: 'void setup() { pinMode(13, OUTPUT); }\n\nvoid loop() {\n  digitalWrite(13, HIGH);\n  delay(1000);\n  digitalWrite(13, LOW);\n  delay(1000);\n}' },
+                    { id: 104, title: 'Теория: Датчики и их применение', desc: 'Виды датчиков, принципы работы', type: 'theory', content: 'Ультразвуковые датчики измеряют расстояние...', completed: false, skill: 'Датчики' },
+                    { id: 105, title: 'Тест: Датчики и их применение', desc: 'Проверьте знания о датчиках', type: 'test', questions: [
+                        { text: 'Какой датчик измеряет расстояние?', options: ['HC-SR04', 'DHT11', 'IR', 'PIR'], correct: 0 },
+                        { text: 'Что такое HC-SR04?', options: ['Ультразвуковой датчик', 'Датчик температуры', 'Датчик света', 'Датчик звука'], correct: 0 },
+                        { text: 'Для чего нужен TCS3200?', options: ['Определение цвета', 'Измерение расстояния', 'Измерение влажности', 'Измерение температуры'], correct: 0 },
+                        { text: 'Что такое энкодер?', options: ['Датчик вращения', 'Датчик расстояния', 'Датчик света', 'Датчик звука'], correct: 0 },
+                        { text: 'Как работает ультразвуковой датчик?', options: ['Эхолокация', 'Инфракрасный', 'Лазерный', 'Звуковой'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 106, title: 'Задание: Подключение датчика расстояния', desc: 'Напишите код для HC-SR04', type: 'task', completed: false, skill: 'Программирование', taskDescription: 'Напишите код для HC-SR04 и выведите расстояние в Serial Monitor.', taskCheck: 'В Serial Monitor выводится расстояние', codeTemplate: '#define TRIG 9\n#define ECHO 10\n\nvoid setup() {\n  Serial.begin(9600);\n  pinMode(TRIG, OUTPUT);\n  pinMode(ECHO, INPUT);\n}\n\nvoid loop() {\n  digitalWrite(TRIG, LOW);\n  delayMicroseconds(2);\n  digitalWrite(TRIG, HIGH);\n  delayMicroseconds(10);\n  digitalWrite(TRIG, LOW);\n  long duration = pulseIn(ECHO, HIGH);\n  int distance = duration * 0.034 / 2;\n  Serial.print("Расстояние: ");\n  Serial.println(distance);\n  delay(500);\n}', codeSolution: '#define TRIG 9\n#define ECHO 10\n\nvoid setup() {\n  Serial.begin(9600);\n  pinMode(TRIG, OUTPUT);\n  pinMode(ECHO, INPUT);\n}\n\nvoid loop() {\n  digitalWrite(TRIG, LOW);\n  delayMicroseconds(2);\n  digitalWrite(TRIG, HIGH);\n  delayMicroseconds(10);\n  digitalWrite(TRIG, LOW);\n  long duration = pulseIn(ECHO, HIGH);\n  int distance = duration * 0.034 / 2;\n  Serial.print("Расстояние: ");\n  Serial.println(distance);\n  delay(500);\n}' }
+                ]
+            },
+            {
+                id: 2,
+                title: 'Программирование роботов',
+                description: 'Освойте языки программирования и алгоритмы для автономных роботов.',
+                duration: '3 недели',
+                level: 'Средний',
+                weight: 1.2,
+                lessons: [
+                    { id: 201, title: 'Теория: Основы C++ для роботов', desc: 'Синтаксис C++, основные конструкции', type: 'theory', content: 'C++ — мощный язык программирования...', completed: false, skill: 'C++' },
+                    { id: 202, title: 'Тест: Основы C++', desc: 'Проверьте знание основ C++', type: 'test', questions: [
+                        { text: 'Какой оператор используется для сравнения?', options: ['==', '=', '!==', '==='], correct: 0 },
+                        { text: 'Что такое переменная в C++?', options: ['Хранилище данных', 'Функция', 'Цикл', 'Массив'], correct: 0 },
+                        { text: 'Как объявить массив из 5 целых чисел?', options: ['int arr[5]', 'arr = []', 'list arr', 'array arr'], correct: 0 },
+                        { text: 'Что такое цикл for?', options: ['Повторение кода', 'Условие', 'Функция', 'Массив'], correct: 0 },
+                        { text: 'Что делает delay(1000)?', options: ['Пауза 1 секунда', 'Пауза 1 минута', 'Пауза 1 час', 'Пауза 1 микросекунда'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 203, title: 'Задание: Программирование движения', desc: 'Напишите программу для движения робота', type: 'task', completed: false, skill: 'Алгоритмы', taskDescription: 'Подключите два мотора через драйвер L298N. Напишите код для движения вперёд 3 сек, назад 3 сек.', taskCheck: 'Робот движется вперёд и назад', codeTemplate: '#define IN1 4\n#define IN2 5\n#define IN3 6\n#define IN4 7\n\nvoid setup() {\n  pinMode(IN1, OUTPUT);\n  pinMode(IN2, OUTPUT);\n  pinMode(IN3, OUTPUT);\n  pinMode(IN4, OUTPUT);\n}\n\nvoid forward() {\n  digitalWrite(IN1, HIGH);\n  digitalWrite(IN2, LOW);\n  digitalWrite(IN3, HIGH);\n  digitalWrite(IN4, LOW);\n}\n\nvoid loop() {\n  forward();\n  delay(3000);\n}', codeSolution: '#define IN1 4\n#define IN2 5\n#define IN3 6\n#define IN4 7\n\nvoid setup() {\n  pinMode(IN1, OUTPUT);\n  pinMode(IN2, OUTPUT);\n  pinMode(IN3, OUTPUT);\n  pinMode(IN4, OUTPUT);\n}\n\nvoid forward() {\n  digitalWrite(IN1, HIGH);\n  digitalWrite(IN2, LOW);\n  digitalWrite(IN3, HIGH);\n  digitalWrite(IN4, LOW);\n}\n\nvoid loop() {\n  forward();\n  delay(3000);\n}' },
+                    { id: 204, title: 'Теория: Алгоритмы навигации', desc: 'Обход препятствий, построение маршрутов', type: 'theory', content: 'Правило правой руки — простой метод обхода лабиринта...', completed: false, skill: 'Навигация' },
+                    { id: 205, title: 'Тест: Алгоритмы навигации', desc: 'Проверьте знания алгоритмов', type: 'test', questions: [
+                        { text: 'Что такое алгоритм?', options: ['Последовательность действий', 'Язык', 'Массив', 'Функция'], correct: 0 },
+                        { text: 'Какой алгоритм для обхода стен?', options: ['Правило правой руки', 'Поиск в ширину', 'Дейкстра', 'А*'], correct: 0 },
+                        { text: 'Что такое PID-регулятор?', options: ['Управление с обратной связью', 'Сбор данных', 'Обработка изображений', 'Распознавание речи'], correct: 0 },
+                        { text: 'Что такое SLAM?', options: ['Построение карты', 'Навигация', 'Управление', 'Сбор данных'], correct: 0 },
+                        { text: 'Что такое обратная связь?', options: ['Сигнал от датчиков', 'Команда', 'Программа', 'Питание'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 206, title: 'Задание: Алгоритм обхода препятствий', desc: 'Создайте алгоритм для объезда препятствий', type: 'task', completed: false, skill: 'Алгоритмы', taskDescription: 'Напишите код алгоритма обхода препятствий: если расстояние < 30 см, робот поворачивает направо.', taskCheck: 'Робот объезжает препятствия', codeTemplate: 'int distance = getDistance();\n\nif (distance < 30) {\n  turnRight();\n} else {\n  forward();\n}', codeSolution: 'int distance = getDistance();\n\nif (distance < 30) {\n  turnRight();\n} else {\n  forward();\n}' }
+                ]
+            },
+            {
+                id: 3,
+                title: 'Сенсоры и актуаторы',
+                description: 'Подключение и программирование сенсоров, моторов и исполнительных механизмов.',
+                duration: '2 недели',
+                level: 'Средний',
+                weight: 1.0,
+                lessons: [
+                    { id: 301, title: 'Теория: Сервоприводы и моторы', desc: 'Сервоприводы, шаговые двигатели, драйверы', type: 'theory', content: 'Сервопривод — двигатель с обратной связью...', completed: false, skill: 'Сервоприводы' },
+                    { id: 302, title: 'Тест: Сервоприводы и моторы', desc: 'Проверьте знание сервоприводов', type: 'test', questions: [
+                        { text: 'Что такое сервопривод?', options: ['Мотор с обратной связью', 'Простой мотор', 'Датчик', 'Контроллер'], correct: 0 },
+                        { text: 'Сколько проводов у сервопривода?', options: ['3', '2', '4', '5'], correct: 0 },
+                        { text: 'Какой сигнал управляет сервоприводом?', options: ['PWM', 'Аналоговый', 'Цифровой', 'I2C'], correct: 0 },
+                        { text: 'Для чего нужен энкодер?', options: ['Определение угла', 'Измерение расстояния', 'Измерение света', 'Измерение звука'], correct: 0 },
+                        { text: 'Что такое H-мост?', options: ['Схема управления двигателем', 'Датчик', 'Контроллер', 'Программа'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 303, title: 'Задание: Управление сервоприводом', desc: 'Подключите сервопривод и напишите программу', type: 'task', completed: false, skill: 'Сервоприводы', taskDescription: 'Подключите сервопривод к пину 9. Напишите код для плавного движения от 0° до 180°.', taskCheck: 'Сервопривод плавно движется', codeTemplate: '#include <Servo.h>\nServo myservo;\nint pos = 0;\n\nvoid setup() {\n  myservo.attach(9);\n}\n\nvoid loop() {\n  for(pos = 0; pos <= 180; pos += 1) {\n    myservo.write(pos);\n    delay(15);\n  }\n}', codeSolution: '#include <Servo.h>\nServo myservo;\nint pos = 0;\n\nvoid setup() {\n  myservo.attach(9);\n}\n\nvoid loop() {\n  for(pos = 0; pos <= 180; pos += 1) {\n    myservo.write(pos);\n    delay(15);\n  }\n}' },
+                    { id: 304, title: 'Теория: Датчики цвета и линии', desc: 'Датчики цвета, отражения, следование по линии', type: 'theory', content: 'TCS3200 — датчик для распознавания цвета...', completed: false, skill: 'Датчики' },
+                    { id: 305, title: 'Тест: Датчики и актуаторы', desc: 'Проверьте общие знания', type: 'test', questions: [
+                        { text: 'Какой датчик определяет цвет?', options: ['TCS3200', 'HC-SR04', 'IR', 'PIR'], correct: 0 },
+                        { text: 'Что такое линия следования?', options: ['Алгоритм движения', 'Датчик', 'Мотор', 'Программа'], correct: 0 },
+                        { text: 'Какой датчик для следования по линии?', options: ['Датчик отражения', 'Ультразвуковой', 'Температуры', 'Влажности'], correct: 0 },
+                        { text: 'Для чего нужен мотор-редуктор?', options: ['Увеличение крутящего момента', 'Увеличение скорости', 'Уменьшение веса', 'Экономия энергии'], correct: 0 },
+                        { text: 'Что такое актуатор?', options: ['Исполнительный механизм', 'Датчик', 'Программа', 'Контроллер'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 306, title: 'Задание: Следование по линии', desc: 'Соберите робота для следования по линии', type: 'task', completed: false, skill: 'Управление', taskDescription: 'Соберите двухмоторного робота с двумя датчиками отражения для следования по линии.', taskCheck: 'Робот следует по линии', codeTemplate: 'int left = analogRead(A0);\nint right = analogRead(A1);\n\nif (left > 500 && right > 500) {\n  forward();\n} else if (left < 500) {\n  turnLeft();\n} else {\n  turnRight();\n}', codeSolution: 'int left = analogRead(A0);\nint right = analogRead(A1);\n\nif (left > 500 && right > 500) {\n  forward();\n} else if (left < 500) {\n  turnLeft();\n} else {\n  turnRight();\n}' }
+                ]
+            },
+            {
+                id: 4,
+                title: 'Промышленная робототехника',
+                description: 'Изучите промышленные роботы, их применение, программирование и безопасность.',
+                duration: '4 недели',
+                level: 'Продвинутый',
+                weight: 1.5,
+                lessons: [
+                    { id: 401, title: 'Теория: Промышленные роботы', desc: 'Виды, применение, компоненты', type: 'theory', content: 'Манипуляторы — для сварки, покраски, сборки...', completed: false, skill: 'Промышленные роботы' },
+                    { id: 402, title: 'Тест: Промышленная робототехника', desc: 'Проверьте знания о промышленных роботах', type: 'test', questions: [
+                        { text: 'Какой тип роботов используется для сварки?', options: ['Манипуляторы', 'AGV', 'Коботы', 'Дроны'], correct: 0 },
+                        { text: 'Что такое кобот?', options: ['Коллаборативный робот', 'Промышленный робот', 'Дрон', 'AGV'], correct: 0 },
+                        { text: 'Где применяются AGV?', options: ['Логистика', 'Сварка', 'Покраска', '3D-печать'], correct: 0 },
+                        { text: 'Какой стандарт безопасности для промышленных роботов?', options: ['ISO 10218', 'ISO 9001', 'ISO 14001', 'ISO 27001'], correct: 0 },
+                        { text: 'Что такое энд-эффектор?', options: ['Рабочий инструмент робота', 'Датчик', 'Мотор', 'Контроллер'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 403, title: 'Задание: Программирование промышленного робота', desc: 'Напишите программу для перемещения робота', type: 'task', completed: false, skill: 'Программирование', taskDescription: 'Напишите программу для перемещения робота из точки A в точку B через промежуточные точки.', taskCheck: 'Программа обрабатывает движение по траектории', codeTemplate: 'void moveToPoint(x, y) {\n  // код перемещения\n}', codeSolution: 'void moveToPoint(x, y) {\n  // код перемещения\n}' },
+                    { id: 404, title: 'Теория: Безопасность в робототехнике', desc: 'Основы безопасности при работе с роботами', type: 'theory', content: 'Ограждения, световые барьеры, аварийная остановка...', completed: false, skill: 'Безопасность' },
+                    { id: 405, title: 'Тест: Безопасность в робототехнике', desc: 'Проверьте знания по безопасности', type: 'test', questions: [
+                        { text: 'Что такое аварийная остановка?', options: ['Экстренное отключение', 'Плавная остановка', 'Ускорение', 'Реверс'], correct: 0 },
+                        { text: 'Для чего нужны световые барьеры?', options: ['Обнаружение человека', 'Освещение', 'Управление', 'Связь'], correct: 0 },
+                        { text: 'Что такое снижение скорости?', options: ['Уменьшение скорости при приближении человека', 'Увеличение скорости', 'Остановка', 'Реверс'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 406, title: 'Задание: Настройка безопасности робота', desc: 'Настройте параметры безопасности', type: 'task', completed: false, skill: 'Безопасность', taskDescription: 'Настройте параметры безопасности: максимальную скорость, зону безопасности и время реакции.', taskCheck: 'Параметры настроены корректно', codeTemplate: 'setMaxSpeed(100);\nsetSafetyZone(50);\nsetReactionTime(0.5);', codeSolution: 'setMaxSpeed(100);\nsetSafetyZone(50);\nsetReactionTime(0.5);' }
+                ]
+            },
+            {
+                id: 5,
+                title: 'Автономные системы и ИИ',
+                description: 'Изучите автономные системы, искусственный интеллект и машинное обучение в робототехнике.',
+                duration: '4 недели',
+                level: 'Продвинутый',
+                weight: 1.5,
+                lessons: [
+                    { id: 501, title: 'Теория: Автономные системы', desc: 'Основы автономных систем', type: 'theory', content: 'Автономная система — способная принимать решения без вмешательства человека...', completed: false, skill: 'Автономность' },
+                    { id: 502, title: 'Тест: Автономные системы', desc: 'Проверьте знания об автономных системах', type: 'test', questions: [
+                        { text: 'Что такое автономная система?', options: ['Принимает решения без человека', 'Управляется человеком', 'Простой механизм', 'Датчик'], correct: 0 },
+                        { text: 'Какой компонент отвечает за восприятие?', options: ['Датчики', 'Актуаторы', 'Алгоритмы', 'Питание'], correct: 0 },
+                        { text: 'Что такое SLAM?', options: ['Построение карты', 'Навигация', 'Управление', 'Сбор данных'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 503, title: 'Теория: Искусственный интеллект', desc: 'Основы ИИ и машинного обучения', type: 'theory', content: 'ИИ — способность машины имитировать человеческое мышление...', completed: false, skill: 'ИИ' },
+                    { id: 504, title: 'Тест: Искусственный интеллект', desc: 'Проверьте знания об ИИ', type: 'test', questions: [
+                        { text: 'Что такое ИИ?', options: ['Имитация человеческого мышления', 'Простая программа', 'Датчик', 'Актуатор'], correct: 0 },
+                        { text: 'Какой тип обучения использует размеченные данные?', options: ['Обучение с учителем', 'Обучение без учителя', 'Обучение с подкреплением', 'Глубокое обучение'], correct: 0 },
+                        { text: 'Что такое нейронная сеть?', options: ['Модель ИИ', 'Датчик', 'Актуатор', 'Программа'], correct: 0 }
+                    ], completed: false, score: 0, passed: false },
+                    { id: 505, title: 'Теория: Компьютерное зрение', desc: 'Основы компьютерного зрения', type: 'theory', content: 'Компьютерное зрение — область ИИ, занимающаяся обработкой и анализом изображений...', completed: false, skill: 'Компьютерное зрение' },
+                    { id: 506, title: 'Задание: Распознавание объектов', desc: 'Напишите код для распознавания объектов', type: 'task', completed: false, skill: 'Компьютерное зрение', taskDescription: 'Напишите код для распознавания объектов на изображении с использованием OpenCV.', taskCheck: 'Программа распознаёт объекты', codeTemplate: 'import cv2\n\n# код распознавания', codeSolution: 'import cv2\n\n# код распознавания' }
+                ]
+            }
+        ];
+
+        // ============================================================
+        // ЛОГИКА
+        // ============================================================
+        function getCourseById(id) {
+            for (var i = 0; i < coursesFullData.length; i++) {
+                if (coursesFullData[i].id === id) {
+                    return coursesFullData[i];
+                }
+            }
+            return null;
+        }
+
+        function getLessonById(course, lessonId) {
+            for (var i = 0; i < course.lessons.length; i++) {
+                if (course.lessons[i].id === lessonId) {
+                    return course.lessons[i];
+                }
+            }
+            return null;
+        }
+
+        function loadSavedProgress(courseId) {
+            var saved = localStorage.getItem('courseProgress_' + courseId);
+            if (saved) {
+                try {
+                    var data = JSON.parse(saved);
+                    var course = getCourseById(courseId);
+                    if (course) {
+                        for (var i = 0; i < course.lessons.length; i++) {
+                            var less = course.lessons[i];
+                            var savedLesson = data.find(function(l) { return l.id === less.id; });
+                            if (savedLesson) {
+                                less.completed = savedLesson.completed || false;
+                                if (less.type === 'test') {
+                                    less.score = savedLesson.score || 0;
+                                    less.passed = savedLesson.passed || false;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function saveProgress(courseId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var data = [];
+            for (var i = 0; i < course.lessons.length; i++) {
+                var less = course.lessons[i];
+                var obj = { id: less.id, completed: less.completed };
+                if (less.type === 'test') {
+                    obj.score = less.score || 0;
+                    obj.passed = less.passed || false;
+                }
+                data.push(obj);
+            }
+            localStorage.setItem('courseProgress_' + courseId, JSON.stringify(data));
+        }
+
+        function getEnrolledCourses() {
+            return JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+        }
+
+        function renderSkills(course) {
+            var skillProgress = {};
+            var totalBySkill = {};
+            for (var i = 0; i < course.lessons.length; i++) {
+                var less = course.lessons[i];
+                if (less.skill) {
+                    if (!totalBySkill[less.skill]) totalBySkill[less.skill] = 0;
+                    totalBySkill[less.skill]++;
+                    if (less.completed) {
+                        if (!skillProgress[less.skill]) skillProgress[less.skill] = 0;
+                        skillProgress[less.skill]++;
+                    }
+                }
+            }
+            var html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0;">';
+            for (var skill in totalBySkill) {
+                var total = totalBySkill[skill];
+                var done = skillProgress[skill] || 0;
+                var percent = Math.round((done / total) * 100);
+                var statusClass = 'todo';
+                var statusText = 'Требует внимания';
+                if (percent >= 80) { statusClass = 'mastered'; statusText = 'Освоен'; }
+                else if (percent >= 40) { statusClass = 'learning'; statusText = 'В процессе'; }
+                html += '<div style="background:#F8FBFC; border-radius:12px; padding:14px 16px; border:1px solid #EDE5D8;">' +
+                    '<div style="font-size:13px; font-weight:600; color:#1A3D4F; margin-bottom:6px;">' + skill + '</div>' +
+                    '<div style="background:#F0F6FA; border-radius:10px; height:8px; overflow:hidden;">' +
+                    '<div style="height:100%; border-radius:10px; width:' + percent + '%; background:' + (statusClass === 'mastered' ? '#27ae60' : statusClass === 'learning' ? '#F2C94C' : '#e74c3c') + '; transition:width 0.8s ease;"></div>' +
+                    '</div>' +
+                    '<div style="font-size:12px; color:#7a9aa8; margin-top:4px;">' + percent + '% ' + statusText + ' (' + done + '/' + total + ')</div>' +
+                    '</div>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        // ============================================================
+        // ОТОБРАЖЕНИЕ
+        // ============================================================
+        function renderCourse() {
+            var params = new URLSearchParams(window.location.search);
+            var courseId = parseInt(params.get('id'));
+            var course = getCourseById(courseId);
+
+            if (!course) {
+                document.getElementById('courseContent').innerHTML =
+                    '<div style="text-align:center; padding:60px; background:#fff; border-radius:16px; border:1px solid #C5DDE8;">' +
+                    '<h2 style="color:#1A3D4F;">Курс не найден</h2>' +
+                    '<a href="courses.html" class="btn btn-primary" style="margin-top:20px;">Вернуться к курсам</a>' +
+                    '</div>';
+                return;
+            }
+
+            var enrolled = getEnrolledCourses();
+            var isEnrolled = enrolled.some(function(c) { return c.id === courseId; });
+
+            if (!isEnrolled) {
+                document.getElementById('courseContent').innerHTML =
+                    '<div style="text-align:center; padding:60px; background:#fff; border-radius:16px; border:1px solid #C5DDE8;">' +
+                    '<h2 style="color:#1A3D4F;">Вы не записаны на этот курс</h2>' +
+                    '<p style="color:#7a9aa8; margin:10px 0;">Чтобы получить доступ, запишитесь на курс.</p>' +
+                    '<button class="btn btn-primary" style="margin-top:20px;" onclick="enrollFromDetail(' + courseId + ')">Записаться на курс</button>' +
+                    '<a href="courses.html" class="btn btn-outline" style="margin-top:10px; display:inline-block;">Вернуться к курсам</a>' +
+                    '</div>';
+                return;
+            }
+
+            loadSavedProgress(courseId);
+
+            var total = course.lessons.length;
+            var completedCount = 0;
+            for (var i = 0; i < course.lessons.length; i++) {
+                if (course.lessons[i].completed) completedCount++;
+            }
+            var progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+            var lessonsHtml = '';
+            for (var i = 0; i < course.lessons.length; i++) {
+                var less = course.lessons[i];
+                var isLocked = i > 0 && !course.lessons[i - 1].completed;
+                var statusClass = less.completed ? 'done' : (isLocked ? 'locked' : 'pending');
+                var statusText = less.completed ? 'Пройдено' : (isLocked ? 'Заблокировано' : 'Ожидает');
+
+                var actionHtml = '';
+                if (less.completed) {
+                    actionHtml = '<span style="font-size:13px; color:#1A6B4A;">Пройдено</span>';
+                } else if (isLocked) {
+                    actionHtml = '<span style="font-size:13px; color:#999;">Выполните предыдущий урок</span>';
+                } else {
+                    if (less.type === 'theory') {
+                        actionHtml = '<button class="btn btn-theory" onclick="showTheory(' + course.id + ', ' + less.id + ')">Изучить теорию</button>';
+                    } else if (less.type === 'test') {
+                        actionHtml = '<button class="btn btn-test" onclick="startTest(' + course.id + ', ' + less.id + ')">Пройти тест (' + (less.questions ? less.questions.length : 0) + ' вопросов)</button>';
+                    } else if (less.type === 'task') {
+                        actionHtml = '<button class="btn btn-task" onclick="startTask(' + course.id + ', ' + less.id + ')">Выполнить</button>';
+                    }
+                }
+
+                lessonsHtml += '<div class="lesson-block ' + (less.completed ? 'completed' : '') + '">' +
+                    '<div class="lesson-header">' +
+                    '<div><span class="lesson-title">' + less.title + '</span></div>' +
+                    '<span class="lesson-status ' + statusClass + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div class="lesson-desc">' + less.desc + '</div>' +
+                    '<div class="lesson-actions">' + actionHtml + '</div>' +
+                    '</div>';
+            }
+
+            var skillsHtml = renderSkills(course);
+
+            document.getElementById('courseContent').innerHTML =
+                '<div class="course-info">' +
+                '<div class="course-title">' + course.title + '</div>' +
+                '<div class="course-meta">' +
+                '<span>' + course.duration + '</span>' +
+                '<span>' + course.level + '</span>' +
+                '<span>' + course.lessons.length + ' уроков</span>' +
+                '<span>Вес: ' + course.weight + '</span>' +
+                '</div>' +
+                '<div class="course-desc">' + course.description + '</div>' +
+                '<div class="progress-section">' +
+                '<div class="progress-label"><span>Прогресс курса</span><span>' + progress + '% (' + completedCount + '/' + total + ')</span></div>' +
+                '<div class="progress-bar"><div class="fill" style="width:' + progress + '%;"></div></div>' +
+                '</div>' +
+                '<h3 style="margin-top:20px; color:#1A3D4F;">Навыки</h3>' +
+                skillsHtml +
+                '</div>' +
+                '<div class="lessons-section"><h2>Уроки</h2>' + lessonsHtml + '</div>';
+        }
+
+        // ============================================================
+        // ДЕЙСТВИЯ
+        // ============================================================
+        function enrollFromDetail(courseId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var enrolled = getEnrolledCourses();
+            if (enrolled.some(function(c) { return c.id === courseId; })) {
+                showToast('Вы уже записаны на этот курс', 'info');
+                renderCourse();
+                return;
+            }
+            enrolled.push({ id: courseId, title: course.title });
+            localStorage.setItem('enrolledCourses', JSON.stringify(enrolled));
+            showToast('Вы записались на курс "' + course.title + '"!', 'success');
+            renderCourse();
+        }
+
+        function showTheory(courseId, lessonId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var less = getLessonById(course, lessonId);
+            if (!less) return;
+
+            var modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = '<div class="modal-content" style="max-width:700px;">' +
+                '<button class="modal-close" onclick="this.closest(\'.modal\').remove()">✕</button>' +
+                '<h2 style="font-size:22px; font-weight:700; color:#1A3D4F; margin-bottom:8px;">' + less.title + '</h2>' +
+                '<p style="color:#7a9aa8; margin-bottom:20px;">' + less.desc + '</p>' +
+                '<div style="background:#F8FBFC; padding:20px; border-radius:12px; margin:15px 0; line-height:1.8;">' + less.content + '</div>' +
+                '<div style="display:flex; gap:12px; margin-top:15px; justify-content:flex-end;">' +
+                '<button class="btn btn-outline" onclick="this.closest(\'.modal\').remove()">Закрыть</button>' +
+                '<button class="btn btn-success" onclick="markTheoryRead(' + courseId + ', ' + lessonId + ')">Изучено</button>' +
+                '</div></div>';
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) { if (e.target === this) this.remove(); });
+        }
+
+        function markTheoryRead(courseId, lessonId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var less = getLessonById(course, lessonId);
+            if (!less) return;
+            less.completed = true;
+            saveProgress(courseId);
+            var modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+            showToast('Теория "' + less.title + '" изучена!', 'success');
+            renderCourse();
+        }
+
+        function startTest(courseId, lessonId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var less = getLessonById(course, lessonId);
+            if (!less) return;
+
+            if (less.completed) {
+                showToast('Тест уже пройден (' + less.score + '%)', 'info');
+                return;
+            }
+
+            var modal = document.createElement('div');
+            modal.className = 'modal';
+
+            var questionsHtml = '';
+            for (var i = 0; i < less.questions.length; i++) {
+                var q = less.questions[i];
+                var optionsHtml = '';
+                for (var oi = 0; oi < q.options.length; oi++) {
+                    optionsHtml += '<label class="test-option" onclick="selectTestOption(this, ' + i + ', ' + oi + ')">' +
+                        '<input type="radio" name="q' + i + '" value="' + oi + '">' +
+                        '<span>' + q.options[oi] + '</span>' +
+                        '<div class="explanation">' + (q.explanation || '') + '</div>' +
+                        '</label>';
+                }
+                questionsHtml += '<div style="margin-bottom:18px; padding:15px; background:#F8FBFC; border-radius:12px; border:1px solid #C5DDE8;">' +
+                    '<p style="font-weight:600; margin-bottom:10px; color:#1A3D4F;">' + (i + 1) + '. ' + q.text + '</p>' +
+                    '<div style="display:flex; flex-direction:column; gap:6px;">' + optionsHtml + '</div>' +
+                    '<div id="feedback' + i + '" style="margin-top:8px; font-weight:600; display:none;"></div></div>';
+            }
+
+            modal.innerHTML = '<div class="modal-content" style="max-width:650px;">' +
+                '<button class="modal-close" onclick="this.closest(\'.modal\').remove()">✕</button>' +
+                '<h2 style="font-size:22px; font-weight:700; color:#1A3D4F; margin-bottom:8px;">Тест: ' + less.title + '</h2>' +
+                '<p style="color:#7a9aa8; margin-bottom:20px;">' + less.desc + ' (' + less.questions.length + ' вопросов)</p>' +
+                '<form id="testForm">' + questionsHtml +
+                '<div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">' +
+                '<button type="button" class="btn btn-outline" onclick="this.closest(\'.modal\').remove()">Отмена</button>' +
+                '<button type="submit" class="btn btn-primary">Отправить ответы</button></div></form>' +
+                '<div id="testResult" style="margin-top:15px;"></div></div>';
+
+            document.body.appendChild(modal);
+
+            document.getElementById('testForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var correct = 0;
+                var total = less.questions.length;
+
+                for (var i = 0; i < total; i++) {
+                    var selected = document.querySelector('input[name="q' + i + '"]:checked');
+                    var feedback = document.getElementById('feedback' + i);
+
+                    if (selected) {
+                        var value = parseInt(selected.value);
+                        var isCorrect = value === less.questions[i].correct;
+                        var options = document.querySelectorAll('input[name="q' + i + '"]');
+                        options.forEach(function(opt, idx) {
+                            var parent = opt.closest('.test-option');
+                            parent.classList.remove('selected', 'correct', 'wrong');
+                            if (idx === less.questions[i].correct) parent.classList.add('correct');
+                            if (opt.checked && idx !== less.questions[i].correct) parent.classList.add('wrong');
+                            var expl = parent.querySelector('.explanation');
+                            if (expl) expl.classList.add('show');
+                        });
+                        if (isCorrect) { correct++; feedback.style.color = '#27ae60'; feedback.textContent = 'Верно!'; }
+                        else { feedback.style.color = '#c0392b'; feedback.textContent = 'Неверно. Правильный ответ: ' + less.questions[i].options[less.questions[i].correct]; }
+                        feedback.style.display = 'block';
+                    } else {
+                        feedback.style.color = '#e67e22';
+                        feedback.textContent = 'Вы не ответили на вопрос';
+                        feedback.style.display = 'block';
+                    }
+                }
+
+                var score = Math.round((correct / total) * 100);
+                var passed = score >= 70;
+
+                document.querySelector('#testForm button[type="submit"]').disabled = true;
+                document.querySelector('#testForm button[type="submit"]').textContent = 'Результат';
+
+                var resultDiv = document.getElementById('testResult');
+                resultDiv.innerHTML =
+                    '<div style="background:' + (passed ? '#E8F5E9' : '#FDE8E8') + '; padding:16px; border-radius:12px; text-align:center; margin-top:15px;">' +
+                    '<div style="font-size:48px;">' + (passed ? '' : '') + '</div>' +
+                    '<h3 style="color:' + (passed ? '#1A6B4A' : '#c0392b') + ';">' + score + '% ' + (passed ? 'Тест пройден!' : 'Попробуйте ещё раз') + '</h3>' +
+                    '<p>Правильных: ' + correct + ' из ' + total + '</p>' +
+                    (passed ? '<button class="btn btn-success" style="margin-top:15px;" onclick="this.closest(\'.modal\').remove(); renderCourse();">Продолжить обучение</button>' :
+                    '<button class="btn btn-outline" style="margin-top:15px;" onclick="this.closest(\'.modal\').remove(); startTest(' + courseId + ', ' + lessonId + ')">Попробовать снова</button>') +
+                    '</div>';
+
+                if (passed) {
+                    less.completed = true;
+                    less.score = score;
+                    less.passed = passed;
+                    saveProgress(courseId);
+                    showToast('Тест: ' + less.title + ' ' + score + '% (Пройден)', 'success');
+                    renderCourse();
+                } else {
+                    showToast('Тест: ' + less.title + ' ' + score + '% (Не пройден)', 'error');
+                }
+            });
+        }
+
+        function selectTestOption(el, qIndex, optIndex) {
+            var parent = el.closest('div[style]');
+            var options = parent.querySelectorAll('.test-option');
+            options.forEach(function(o) {
+                o.classList.remove('selected');
+                o.querySelector('input[type="radio"]').checked = false;
+            });
+            el.classList.add('selected');
+            el.querySelector('input[type="radio"]').checked = true;
+        }
+
+        function startTask(courseId, lessonId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var less = getLessonById(course, lessonId);
+            if (!less) return;
+
+            if (less.completed) {
+                showToast('Задание "' + less.title + '" уже выполнено!', 'info');
+                return;
+            }
+
+            var modal = document.createElement('div');
+            modal.className = 'modal';
+            var code = less.codeTemplate || '';
+
+            modal.innerHTML = '<div class="modal-content" style="max-width:700px;">' +
+                '<button class="modal-close" onclick="this.closest(\'.modal\').remove()">✕</button>' +
+                '<h2 style="font-size:22px; font-weight:700; color:#1A3D4F; margin-bottom:8px;">Задание: ' + less.title + '</h2>' +
+                '<p style="color:#7a9aa8; margin-bottom:20px;">' + less.desc + '</p>' +
+                '<div style="background:#F8FBFC; padding:16px; border-radius:12px; margin:15px 0; border-left:4px solid #7FC1C5;">' +
+                '<h4 style="color:#1A3D4F; margin-bottom:8px;">Задание:</h4>' +
+                '<div style="font-size:14px; line-height:1.8; color:#2C3E50;">' + less.taskDescription + '</div></div>' +
+                '<div style="background:#FFF8E1; padding:12px; border-radius:10px; margin:10px 0; border-left:4px solid #F2C94C;">' +
+                '<strong>Критерий выполнения:</strong><span style="font-size:14px; color:#2C3E50;">' + less.taskCheck + '</span></div>' +
+                '<div style="margin-top:15px;"><label style="font-weight:600; color:#1A3D4F; display:block; margin-bottom:8px;">Ваш код:</label>' +
+                '<div class="task-code-block"><textarea class="code-editor" id="codeEditor" rows="' + Math.max(8, code.split('\n').length) + '">' + code + '</textarea></div></div>' +
+                '<div style="display:flex; gap:12px; margin-top:15px; flex-wrap:wrap;">' +
+                '<button class="btn btn-outline" onclick="this.closest(\'.modal\').remove()">Отмена</button>' +
+                '<button class="btn btn-primary" onclick="checkCode(' + courseId + ', ' + lessonId + ')">Проверить код</button></div>' +
+                '<div id="taskResult" style="margin-top:15px;"></div></div>';
+            document.body.appendChild(modal);
+        }
+
+        function checkCode(courseId, lessonId) {
+            var course = getCourseById(courseId);
+            if (!course) return;
+            var less = getLessonById(course, lessonId);
+            if (!less) return;
+
+            var codeEditor = document.getElementById('codeEditor');
+            if (!codeEditor) return;
+
+            var userCode = codeEditor.value.trim();
+            var solutionCode = (less.codeSolution || '').trim();
+
+            var isCorrect = userCode === solutionCode || userCode.length > 10;
+
+            var resultDiv = document.getElementById('taskResult');
+
+            if (isCorrect) {
+                less.completed = true;
+                saveProgress(courseId);
+                resultDiv.innerHTML =
+                    '<div style="background:#E8F5E9; padding:16px; border-radius:12px; text-align:center;">' +
+                    '<div style="font-size:48px;"></div>' +
+                    '<h3 style="color:#1A6B4A;">Задание выполнено верно!</h3>' +
+                    '<button class="btn btn-success" style="margin-top:15px;" onclick="this.closest(\'.modal\').remove(); renderCourse();">Продолжить обучение</button></div>';
+                showToast('Задание "' + less.title + '" выполнено!', 'success');
+                renderCourse();
+            } else {
+                resultDiv.innerHTML =
+                    '<div style="background:#FDE8E8; padding:16px; border-radius:12px; text-align:center;">' +
+                    '<div style="font-size:48px;"></div>' +
+                    '<h3 style="color:#c0392b;">Код не совпадает с решением</h3>' +
+                    '<p style="font-size:14px; color:#2C3E50; margin:10px 0;">Попробуйте ещё раз.</p>' +
+                    '<button class="btn btn-outline" style="margin-top:10px;" onclick="document.getElementById(\'taskResult\').innerHTML = \'\';">Понятно</button></div>';
+                showToast('Код неверный. Попробуйте ещё раз.', 'error');
+            }
+        }
+
+        // ============================================================
+        // ЗАПУСК
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+            initNav();
+            renderCourse();
+        });
+    </script>
+
+</body>
+</html>

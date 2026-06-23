@@ -1,23 +1,1691 @@
-<h1>Мой профиль</h1>
-<div id="info"></div>
-<button onclick="logout()">Выйти</button>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Profile - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<script>
-const userId = localStorage.getItem('userId');
-if(!userId) location.href = 'login.html';
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: #E8F4F8;
+            min-height: 100vh;
+        }
 
-async function load() {
-  const res = await fetch(`/api/user/${userId}`);
-  const user = await res.json();
-  document.getElementById('info').innerHTML = `
-    <p>Имя: ${user.name}</p>
-    <p>Email: ${user.email}</p>
-    <p>Роль: ${user.role}</p>
-  `;
-}
-function logout() {
-  localStorage.clear();
-  location.href = 'index.html';
-}
-load();
-</script>
+        .mainn {
+            padding: 0 50px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0 20px;
+            border-bottom: 1px solid #C5DDE8;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #1A3D4F;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #5BA3C9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .nav-links a {
+            color: #2C3E50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2B5F7A;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-right a {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right .login-link {
+            color: #2B5F7A;
+        }
+
+        .header-right .login-link:hover {
+            color: #1A3D4F;
+            text-decoration: underline;
+        }
+
+        .header-right .register-link {
+            color: #FFFFFF;
+            background: #3A7B9E;
+            padding: 10px 28px;
+            border-radius: 30px;
+        }
+
+        .header-right .register-link:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 123, 158, 0.3);
+        }
+
+        .header-right .avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 2px solid #5BA3C9;
+            flex-shrink: 0;
+        }
+
+        .header-right .avatar-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-full {
+            width: 100%;
+            background: #FFFFFF;
+            border: 1px solid #C5DDE8;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(43, 95, 122, 0.06);
+            margin-bottom: 40px;
+        }
+
+        .profile-cover {
+            height: 200px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .profile-cover .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-cover .cover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 61, 79, 0.7), rgba(91, 163, 201, 0.5));
+        }
+
+        .profile-avatar-wrap {
+            position: absolute;
+            bottom: 5px;
+            left: 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .profile-avatar-wrap .avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #FFFFFF;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            font-size: 48px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .profile-avatar-wrap .avatar-large:hover {
+            transform: scale(1.02);
+        }
+
+        .profile-avatar-wrap .avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-avatar-wrap .avatar-large span {
+            border-radius: 50%;
+        }
+
+        .profile-avatar-wrap .profile-name-wrap {
+            padding-bottom: 10px;
+        }
+
+        .profile-avatar-wrap .profile-name-wrap h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .profile-avatar-wrap .profile-name-wrap .role-badge {
+            background: rgba(255,255,255,0.2);
+            color: #FFFFFF;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+        }
+
+        .profile-avatar-wrap .profile-name-wrap .email {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .profile-actions-top {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-white {
+            background: #FFFFFF;
+            color: #2B5F7A;
+        }
+
+        .btn-white:hover {
+            background: #F0F6FA;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #3A7B9E;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #C5DDE8;
+            color: #2C3E50;
+        }
+
+        .btn-outline:hover {
+            border-color: #5BA3C9;
+            background: #F8FBFC;
+        }
+
+        .btn-gold {
+            background: #7FC1C5;
+            color: #1A3D4F;
+        }
+
+        .btn-gold:hover {
+            background: #6db3b7;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 12px;
+        }
+
+        .profile-menu {
+            display: flex;
+            gap: 0;
+            padding: 0 30px;
+            margin-top: 70px;
+            border-bottom: 1px solid #F0F6FA;
+            flex-wrap: wrap;
+        }
+
+        .profile-menu .menu-item {
+            padding: 14px 22px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #7a9aa8;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+            text-decoration: none;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .profile-menu .menu-item:hover {
+            color: #2B5F7A;
+        }
+
+        .profile-menu .menu-item.active {
+            color: #2B5F7A;
+            border-bottom-color: #2B5F7A;
+        }
+
+        .profile-body {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            padding: 25px 30px 30px;
+        }
+
+        .profile-left {
+            padding-right: 30px;
+            border-right: 1px solid #F0F6FA;
+        }
+
+        .profile-left .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #7a9aa8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .profile-left .about-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #2C3E50;
+        }
+
+        .profile-left .about-item .icon {
+            width: 28px;
+            color: #7a9aa8;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .profile-left .about-item .label {
+            color: #7a9aa8;
+            font-weight: 500;
+        }
+
+        .profile-left .about-item .value {
+            font-weight: 500;
+        }
+
+        .profile-left .divider {
+            border: none;
+            border-top: 1px solid #F0F6FA;
+            margin: 16px 0;
+        }
+
+        .profile-left .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #2C3E50;
+        }
+
+        .profile-left .stat-item .count {
+            font-weight: 700;
+            color: #1A3D4F;
+        }
+
+        .profile-left .stat-item .label {
+            color: #7a9aa8;
+        }
+
+        .profile-right {
+            padding-left: 30px;
+        }
+
+        .post-card {
+            background: #FFFFFF;
+            border: 1px solid #F0F6FA;
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .post-card:hover {
+            border-color: #C5DDE8;
+        }
+
+        .post-card .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-card .post-header .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .post-card .post-header .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .post-card .post-header .post-author {
+            font-weight: 600;
+            color: #1A3D4F;
+        }
+
+        .post-card .post-header .post-time {
+            font-size: 12px;
+            color: #7a9aa8;
+            margin-left: auto;
+        }
+
+        .post-card .post-content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #2C3E50;
+            margin-bottom: 12px;
+        }
+
+        .post-card .post-stats {
+            display: flex;
+            gap: 20px;
+            padding-top: 12px;
+            border-top: 1px solid #F0F6FA;
+            font-size: 13px;
+            color: #7a9aa8;
+        }
+
+        .post-card .post-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-card .post-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .post-card .post-actions .btn-action {
+            background: none;
+            border: none;
+            font-family: 'Raleway', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #7a9aa8;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-card .post-actions .btn-action:hover {
+            background: #F0F6FA;
+            color: #2B5F7A;
+        }
+
+        .links {
+            margin-top: 25px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #F0F6FA;
+        }
+
+        .links a {
+            color: #7a9aa8;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .links a:hover {
+            color: #2B5F7A;
+        }
+
+        .admin-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.4s ease;
+            z-index: 999;
+            color: #fff;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #1A6B4A;
+        }
+        .toast.error {
+            background: #c0392b;
+        }
+        .toast.info {
+            background: #2B5F7A;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 61, 79, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-box h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A3D4F;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .modal-box p {
+            color: #7a9aa8;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid #C5DDE8;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            background: #2B5F7A;
+            overflow: hidden;
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.05);
+            border-color: #5BA3C9;
+        }
+
+        .avatar-option.selected {
+            border-color: #5BA3C9;
+            box-shadow: 0 0 0 4px rgba(91, 163, 201, 0.3);
+        }
+
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 20px;
+            font-size: 13px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #C5DDE8;
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 16px;
+        }
+
+        .file-upload-area:hover {
+            border-color: #5BA3C9;
+            background: #F8FBFC;
+        }
+
+        .file-upload-area i {
+            font-size: 32px;
+            color: #5BA3C9;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .file-upload-area p {
+            color: #7a9aa8;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-preview {
+            margin: 10px 0 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .upload-preview.active {
+            display: block;
+        }
+
+        .upload-preview img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #5BA3C9;
+            object-fit: cover;
+        }
+
+        .footer-main {
+            background: #FFFFFF;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 60px 20px;
+            margin-top: 0;
+            border-top: 1px solid #C5DDE8;
+            box-shadow: 0 -5px 30px rgba(43, 95, 122, 0.04);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            max-width: 1400px;
+            margin: 0 auto 25px;
+        }
+
+        .footer-col h4 {
+            font-weight: 700;
+            font-size: 13px;
+            color: #2B5F7A;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-col p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2C3E50;
+            margin: 0;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: #2C3E50;
+            text-decoration: none;
+            padding: 3px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #2B5F7A;
+            text-decoration: underline;
+        }
+
+        .footer-logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #1A3D4F;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo span {
+            color: #5BA3C9;
+        }
+
+        .footer-desc {
+            font-size: 14px;
+            color: #7a9aa8;
+            line-height: 1.6;
+            max-width: 220px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #EDE5D8;
+            border-bottom: 1px solid #EDE5D8;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+            color: #2C3E50;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-weight: 600;
+        }
+
+        .footer-bottom-left .divider {
+            color: #C5DDE8;
+        }
+
+        .footer-bottom-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .footer-bottom-right a {
+            color: #2B5F7A;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-bottom-right a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-copy {
+            text-align: center;
+            padding-top: 15px;
+            font-size: 13px;
+            color: #7a9aa8;
+        }
+
+        .grade-card {
+            background: #F8FBFC;
+            border: 1px solid #F0F6FA;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grade-card .course-name {
+            font-weight: 600;
+            color: #1A3D4F;
+        }
+
+        .grade-card .score {
+            font-weight: 700;
+            font-size: 18px;
+            color: #2B5F7A;
+        }
+
+        .grade-card .status {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-passed {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-failed {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-progress {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .group-badge {
+            display: inline-block;
+            background: #E3F2FD;
+            color: #1565C0;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-body {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .profile-left {
+                padding-right: 0;
+                border-right: none;
+            }
+            .profile-right {
+                padding-left: 0;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            .footer-main {
+                padding: 30px 30px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mainn {
+                padding: 0 20px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                padding: 20px 0;
+                margin-bottom: 25px;
+            }
+            .header-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .nav-links {
+                gap: 20px;
+                font-size: 14px;
+                flex-wrap: wrap;
+            }
+            .header-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .profile-cover {
+                height: 150px;
+            }
+            .profile-avatar-wrap {
+                left: 20px;
+                bottom: -30px;
+            }
+            .profile-avatar-wrap .avatar-large {
+                width: 90px;
+                height: 90px;
+                font-size: 36px;
+            }
+            .profile-avatar-wrap .profile-name-wrap h1 {
+                font-size: 22px;
+            }
+            .profile-actions-top {
+                right: 15px;
+                bottom: 10px;
+            }
+            .profile-actions-top .btn {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .profile-menu {
+                padding: 0 15px;
+                margin-top: 55px;
+            }
+            .profile-menu .menu-item {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+            .profile-body {
+                padding: 15px;
+            }
+            .profile-left .about-item {
+                font-size: 13px;
+            }
+            .profile-full {
+                border-radius: 12px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .footer-main {
+                padding: 25px 20px 12px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .footer-desc {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mainn {
+                padding: 0 12px;
+            }
+            .header {
+                padding: 15px 0;
+                margin-bottom: 20px;
+            }
+            .nav-links {
+                gap: 12px;
+                font-size: 13px;
+            }
+            .profile-cover {
+                height: 120px;
+            }
+            .profile-avatar-wrap {
+                left: 15px;
+                bottom: -30px;
+            }
+            .profile-avatar-wrap .avatar-large {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            .profile-avatar-wrap .profile-name-wrap h1 {
+                font-size: 18px;
+            }
+            .profile-avatar-wrap .profile-name-wrap .role-badge {
+                font-size: 11px;
+                padding: 2px 12px;
+            }
+            .profile-avatar-wrap .profile-name-wrap .email {
+                font-size: 12px;
+            }
+            .profile-actions-top {
+                right: 10px;
+                bottom: 5px;
+            }
+            .profile-actions-top .btn {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .profile-menu {
+                padding: 0 10px;
+                margin-top: 45px;
+            }
+            .profile-menu .menu-item {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+            .profile-body {
+                padding: 10px;
+            }
+            .post-card {
+                padding: 14px 16px;
+            }
+            .post-card .post-stats {
+                font-size: 12px;
+                gap: 12px;
+            }
+            .post-card .post-actions .btn-action {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+            .profile-left .about-item {
+                font-size: 12px;
+                padding: 6px 0;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .avatar-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .footer-main {
+                padding: 20px 15px 10px;
+                border-radius: 16px 16px 0 0;
+            }
+            .grade-card {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="mainn">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">LMS<span>.</span></a>
+                <div class="nav-links">
+                    <a href="my-courses.html">Содержание</a>
+                    <a href="calendar.html">Календарь</a>
+                    <a href="courses.html">Курсы</a>
+                </div>
+            </div>
+            <div class="header-right" id="navRight">
+                <div id="guestNav">
+                    <a href="login.html" class="login-link">ВХОД</a>
+                    <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+                </div>
+                <div id="userNav" style="display:none;">
+                    <div class="avatar-mini" id="headerAvatar"><span id="headerAvatarText">-</span></div>
+                    <a href="profile.html" class="login-link" style="font-weight:600;"><span id="userNameDisplay">-</span></a>
+                    <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-full" id="profileContainer"></div>
+    </main>
+
+    <footer class="footer-main">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">LMS<span>.</span></div>
+                <p class="footer-desc">Современная платформа для онлайн-обучения. Учись когда угодно, где угодно.</p>
+            </div>
+            <div class="footer-col">
+                <h4>EXPLORE</h4>
+                <a href="index.html">Главная</a>
+                <a href="courses.html">Курсы</a>
+                <a href="my-courses.html">Мои курсы</a>
+                <a href="profile.html">Профиль</a>
+            </div>
+            <div class="footer-col">
+                <h4>VISIT</h4>
+                <p>LMS Learning Center<br>123 Education St, Ste 100<br>Moscow, Russia 101000</p>
+            </div>
+            <div class="footer-col">
+                <h4>FOLLOW</h4>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL</h4>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-left"><span>Next: About</span><span class="divider">|</span><span>Be Bold.</span></div>
+            <div class="footer-bottom-right"><span>New Business</span><a href="mailto:engage@lms.com">engage@lms.com</a><span>+7 999 333 3106</span></div>
+        </div>
+        <div class="footer-copy"><p>© 2026 LMS. All Rights Reserved.</p></div>
+    </footer>
+
+    <div class="modal-overlay" id="avatarModal">
+        <div class="modal-box">
+            <h3>Выберите аватарку</h3>
+            <p>Загрузите своё изображение или выберите из предложенных</p>
+
+            <div class="file-upload-area" onclick="document.getElementById('avatarFileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Нажмите, чтобы загрузить изображение</p>
+                <p style="font-size:12px; color:#b0c4d0;">PNG, JPG, GIF до 2MB</p>
+                <input type="file" id="avatarFileInput" accept="image/*" onchange="handleFileUpload(event)">
+            </div>
+
+            <div class="upload-preview" id="uploadPreview">
+                <img id="previewImage" src="" alt="Preview">
+                <p style="margin-top:6px; font-size:12px; color:#1A6B4A;">Изображение загружено</p>
+            </div>
+
+            <div class="avatar-grid" id="avatarGrid"></div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline btn-sm" onclick="closeAvatarModal()">Отмена</button>
+                <button class="btn btn-primary btn-sm" onclick="saveAvatar()">Выбрать</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function initDatabase() {
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина Иванова', email: 'katya@email.com', password: '123456', role: 'student', active: true, avatar: null },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', password: '123456', role: 'teacher', active: true, avatar: null },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', password: '123456', role: 'curator', active: true, avatar: null },
+                    { id: 4, name: 'Администратор', email: 'admin@admin.com', password: 'admin123', role: 'admin', active: true, avatar: null }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+        }
+
+        function getCurrentUser() {
+            const email = localStorage.getItem('userEmail');
+            if (!email) return null;
+            const users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            const user = users.find(u => u.email === email);
+            if (!user) {
+                const newUser = {
+                    id: Date.now(),
+                    name: localStorage.getItem('userName') || 'Пользователь',
+                    email: email,
+                    password: '123456',
+                    role: localStorage.getItem('userRole') || 'student',
+                    active: true,
+                    avatar: null
+                };
+                users.push(newUser);
+                localStorage.setItem('lms_users', JSON.stringify(users));
+                return newUser;
+            }
+            return user;
+        }
+
+        function getCourses() {
+            let courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            if (courses.length === 0) {
+                courses = [
+                    { id: 1, title: 'Введение в робототехнику', description: 'Изучите основы робототехники', weight: 1.0, lessons: [] },
+                    { id: 2, title: 'Программирование роботов', description: 'Освойте языки программирования', weight: 1.2, lessons: [] }
+                ];
+                localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            }
+            return courses;
+        }
+
+        function getGroups() {
+            return JSON.parse(localStorage.getItem('curatorGroups') || '[]');
+        }
+
+        function getStudentGrades() {
+            return JSON.parse(localStorage.getItem('studentGrades') || '[]');
+        }
+
+        function getCourseProgress(courseId) {
+            const key = 'courseProgress_' + courseId;
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
+            }
+            return [];
+        }
+
+        function initNav() {
+            const userEmail = localStorage.getItem('userEmail');
+            const userName = localStorage.getItem('userName');
+
+            if (userEmail) {
+                document.getElementById('guestNav').style.display = 'none';
+                const userNav = document.getElementById('userNav');
+                userNav.style.display = 'flex';
+                userNav.style.alignItems = 'center';
+                userNav.style.gap = '15px';
+                document.getElementById('userNameDisplay').textContent = userName || 'Пользователь';
+                updateHeaderAvatar();
+            }
+        }
+
+        function logout() {
+            if (confirm('Выйти из аккаунта?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        const AVATAR_COLORS = ['#2B5F7A', '#3A7B9E', '#5BA3C9', '#7FC1C5', '#F2C94C', '#E65100', '#388E3C', '#c0392b'];
+
+        let selectedAvatar = null;
+
+        function generateAvatarOptions() {
+            const grid = document.getElementById('avatarGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 8; i++) {
+                const div = document.createElement('div');
+                div.className = 'avatar-option';
+                div.style.background = AVATAR_COLORS[i];
+                div.textContent = i + 1;
+                div.dataset.color = AVATAR_COLORS[i];
+                div.dataset.icon = i + 1;
+                div.dataset.type = 'preset';
+                div.onclick = function() { selectAvatarOption(this); };
+                grid.appendChild(div);
+            }
+
+            const user = getCurrentUser();
+            if (user && user.avatar && user.avatar.type === 'upload') {
+                addUploadedAvatar(user.avatar.data);
+            }
+        }
+
+        function addUploadedAvatar(imageData) {
+            const grid = document.getElementById('avatarGrid');
+            const existing = grid.querySelector('[data-type="upload"]');
+            if (existing) existing.remove();
+
+            const div = document.createElement('div');
+            div.className = 'avatar-option';
+            div.dataset.type = 'upload';
+            div.dataset.data = imageData;
+            div.innerHTML = `<img src="${imageData}" alt="Uploaded avatar">`;
+            div.onclick = function() { selectAvatarOption(this); };
+            grid.insertBefore(div, grid.firstChild);
+        }
+
+        function selectAvatarOption(element) {
+            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+
+            if (element.dataset.type === 'preset') {
+                selectedAvatar = { type: 'preset', color: element.dataset.color, icon: element.dataset.icon };
+            } else if (element.dataset.type === 'upload') {
+                selectedAvatar = { type: 'upload', data: element.dataset.data };
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Файл слишком большой (макс. 2MB)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+
+                document.getElementById('uploadPreview').classList.add('active');
+                document.getElementById('previewImage').src = imageData;
+
+                addUploadedAvatar(imageData);
+
+                const uploadEl = document.querySelector('[data-type="upload"]');
+                if (uploadEl) {
+                    document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+                    uploadEl.classList.add('selected');
+                    selectedAvatar = { type: 'upload', data: imageData };
+                }
+
+                showToast('Изображение загружено!', 'success');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function openAvatarModal() {
+            document.getElementById('avatarModal').classList.add('active');
+            generateAvatarOptions();
+
+            const user = getCurrentUser();
+            if (user && user.avatar) {
+                document.querySelectorAll('.avatar-option').forEach(el => {
+                    if (user.avatar.type === 'preset' && el.dataset.type === 'preset' &&
+                        el.dataset.color === user.avatar.color && el.dataset.icon === user.avatar.icon) {
+                        el.classList.add('selected');
+                        selectedAvatar = user.avatar;
+                    } else if (user.avatar.type === 'upload' && el.dataset.type === 'upload') {
+                        el.classList.add('selected');
+                        selectedAvatar = user.avatar;
+                        document.getElementById('uploadPreview').classList.add('active');
+                        document.getElementById('previewImage').src = user.avatar.data;
+                    }
+                });
+            }
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('active');
+            document.getElementById('uploadPreview').classList.remove('active');
+            selectedAvatar = null;
+        }
+
+        function saveAvatar() {
+            if (!selectedAvatar) {
+                showToast('Выберите или загрузите аватарку', 'error');
+                return;
+            }
+
+            const email = localStorage.getItem('userEmail');
+            if (!email) {
+                showToast('Ошибка: пользователь не найден', 'error');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            const userIndex = users.findIndex(u => u.email === email);
+
+            if (userIndex === -1) {
+                users.push({
+                    id: Date.now(),
+                    name: localStorage.getItem('userName') || 'Пользователь',
+                    email: email,
+                    password: '123456',
+                    role: localStorage.getItem('userRole') || 'student',
+                    active: true,
+                    avatar: selectedAvatar
+                });
+            } else {
+                users[userIndex].avatar = selectedAvatar;
+            }
+
+            localStorage.setItem('lms_users', JSON.stringify(users));
+
+            updateAvatarDisplay(selectedAvatar);
+            updateHeaderAvatar();
+
+            closeAvatarModal();
+            showToast('Аватарка обновлена!', 'success');
+        }
+
+        function updateAvatarDisplay(avatar) {
+            const display = document.getElementById('avatarDisplay');
+            const textSpan = document.getElementById('avatarText');
+            display.innerHTML = '';
+
+            if (avatar) {
+                if (avatar.type === 'preset') {
+                    display.innerHTML = `<span style="font-size:48px;">${avatar.icon}</span>`;
+                    display.style.background = avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (avatar.type === 'upload') {
+                    display.innerHTML = `<img src="${avatar.data}" alt="Avatar">`;
+                    display.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else {
+                const user = getCurrentUser();
+                if (user) {
+                    const parts = user.name.split(' ');
+                    const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                    textSpan.textContent = initials;
+                    textSpan.style.display = 'block';
+                    display.style.background = '#2B5F7A';
+                }
+            }
+        }
+
+        function updateHeaderAvatar() {
+            const user = getCurrentUser();
+            const headerAvatar = document.getElementById('headerAvatar');
+            const textSpan = document.getElementById('headerAvatarText');
+            headerAvatar.innerHTML = '';
+
+            if (user && user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    headerAvatar.innerHTML = `<span style="font-size:16px;">${user.avatar.icon}</span>`;
+                    headerAvatar.style.background = user.avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (user.avatar.type === 'upload') {
+                    headerAvatar.innerHTML = `<img src="${user.avatar.data}" alt="Avatar">`;
+                    headerAvatar.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else if (user) {
+                const parts = user.name.split(' ');
+                const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                textSpan.textContent = initials;
+                textSpan.style.display = 'block';
+                headerAvatar.style.background = '#2B5F7A';
+            }
+        }
+
+        function renderProfile() {
+            const user = getCurrentUser();
+            if (!user) {
+                document.getElementById('profileContainer').innerHTML = `
+                    <div style="text-align:center; padding:60px;">
+                        <h2 style="color:#1A3D4F;">Пользователь не найден</h2>
+                        <p style="color:#7a9aa8; margin:15px 0;">Пожалуйста, войдите заново</p>
+                        <a href="login.html" class="btn btn-primary">Войти</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const parts = user.name.split(' ');
+            const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+            const roleMap = { 'student': 'Студент', 'teacher': 'Преподаватель', 'curator': 'Куратор', 'admin': 'Администратор' };
+
+            let avatarHtml = '';
+            if (user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    avatarHtml = `<span style="font-size:48px;">${user.avatar.icon}</span>`;
+                } else if (user.avatar.type === 'upload') {
+                    avatarHtml = `<img src="${user.avatar.data}" alt="Avatar">`;
+                }
+            }
+
+            const posts = [
+                { time: '2 часа назад', content: '' },
+                { time: 'Вчера', content: 'Начинаю новый курс "Программирование роботов". Очень интересно!' },
+            ];
+
+            let postsHtml = '';
+            posts.forEach(p => {
+                postsHtml += `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-avatar" style="background:#2B5F7A;">${initials}</div>
+                            <span class="post-author">${user.name}</span>
+                            <span class="post-time">${p.time}</span>
+                        </div>
+                        <div class="post-content">${p.content}</div>
+                    </div>
+                `;
+            });
+
+            let gradesHtml = '';
+            if (user.role === 'student') {
+                const courses = getCourses();
+                const grades = getStudentGrades();
+                const groups = getGroups();
+                const userGroup = groups.find(g => g.students && g.students.includes(user.id));
+
+                gradesHtml = `
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #F0F6FA;">
+                        <h3 style="color:#1A3D4F; margin-bottom:12px;">Мои оценки</h3>
+                        ${userGroup ? `<p style="margin-bottom:12px;"><span class="group-badge">Группа: ${userGroup.name}</span></p>` : ''}
+                        ${courses.length > 0 ? courses.map(c => {
+                            const grade = grades.find(g => g.studentId === user.id && g.courseId === c.id);
+                            const progress = getCourseProgress(c.id);
+                            const p = progress.find(pr => pr.studentId === user.id);
+                            const score = grade ? grade.score : (p ? p.score : 0);
+                            const status = score >= 60 ? 'status-passed' : (score > 0 ? 'status-progress' : 'status-progress');
+                            const statusText = score >= 60 ? 'Зачет' : (score > 0 ? 'В процессе' : 'Не начат');
+                            return `
+                                <div class="grade-card">
+                                    <span class="course-name">${c.title}</span>
+                                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                                        <span class="score">${score || '—'}</span>
+                                        <span class="status ${status}">${statusText}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('') : '<p style="color:#7a9aa8;">Нет доступных курсов</p>'}
+                    </div>
+                `;
+            }
+
+            document.getElementById('profileContainer').innerHTML = `
+                <div class="profile-cover">
+                    <img src="https://adukar.com/images/photo/kak-vybrat-kruzhok-po-robototekhnike-3.jpg" alt="Cover" class="cover-image">
+                    <div class="cover-overlay"></div>
+                    <div class="profile-avatar-wrap">
+                        <div class="avatar-large" id="avatarDisplay" onclick="openAvatarModal()">
+                            ${avatarHtml || `<span id="avatarText">${initials}</span>`}
+                        </div>
+                        <div class="profile-name-wrap">
+                            <h1>${user.name}</h1>
+                            <div>
+                                <span class="role-badge">${roleMap[user.role] || 'Пользователь'}</span>
+                            </div>
+                            <div class="email">${user.email}</div>
+                        </div>
+                    </div>
+                    <div class="profile-actions-top">
+                        <a href="#" class="btn btn-primary btn-sm" onclick="saveProfile(event)">Сохранить</a>
+                    </div>
+                </div>
+
+                <div class="profile-menu">
+                    <button class="menu-item active" onclick="switchTab('timeline', this)">Timeline</button>
+                    <button class="menu-item" onclick="switchTab('about', this)">About</button>
+                </div>
+
+                <div class="profile-body" id="profileBody">
+                    <div class="profile-left">
+                        <div class="section-title">About</div>
+
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-briefcase"></i></span>
+                            <span><span class="label">Работа:</span> <span class="value">${user.role === 'teacher' ? 'Преподаватель в LMS' : user.role === 'curator' ? 'Куратор в LMS' : user.role === 'admin' ? 'Администратор LMS' : 'Студент LMS'}</span></span>
+                        </div>
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-graduation-cap"></i></span>
+                            <span><span class="label">Образование:</span> <span class="value">Онлайн-платформа LMS</span></span>
+                        </div>
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                            <span><span class="label">Город:</span> <span class="value">Москва, Россия</span></span>
+                        </div>
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span><span class="label">Подписчики:</span> <span class="value">${Math.floor(Math.random() * 100) + 10} человек</span></span>
+                        </div>
+
+                        <hr class="divider">
+
+                        <div class="section-title">Контакты</div>
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-envelope"></i></span>
+                            <span><span class="value">${user.email}</span></span>
+                        </div>
+                        <div class="about-item">
+                            <span class="icon"><i class="fas fa-phone"></i></span>
+                            <span><span class="value">+7 (999) 333-31-06</span></span>
+                        </div>
+                    </div>
+
+                    <div class="profile-right" id="profileRight">
+                        <div id="tab-timeline">
+                            ${postsHtml}
+                            ${gradesHtml}
+                        </div>
+                        <div id="tab-about" style="display:none;">
+                            <div class="post-card">
+                                <h3 style="color:#1A3D4F; margin-bottom:12px;">Подробная информация</h3>
+                                <div class="about-item" style="padding:8px 0;">
+                                    <span style="width:120px; color:#7a9aa8;">Полное имя:</span>
+                                    <span style="font-weight:500;">${user.name}</span>
+                                </div>
+                                <div class="about-item" style="padding:8px 0;">
+                                    <span style="width:120px; color:#7a9aa8;">Email:</span>
+                                    <span style="font-weight:500;">${user.email}</span>
+                                </div>
+                                <div class="about-item" style="padding:8px 0;">
+                                    <span style="width:120px; color:#7a9aa8;">Роль:</span>
+                                    <span style="font-weight:500;">${roleMap[user.role] || 'Пользователь'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (user.avatar) {
+                updateAvatarDisplay(user.avatar);
+                updateHeaderAvatar();
+            }
+
+            document.getElementById('userNameDisplay').textContent = user.name;
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.profile-menu .menu-item').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+
+            const tabs = ['timeline', 'about'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (el) el.style.display = t === tab ? 'block' : 'none';
+            });
+        }
+
+        function saveProfile(e) {
+            if (e) e.preventDefault();
+            showToast('Профиль сохранён!', 'success');
+        }
+
+        let toastTimer;
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        document.getElementById('avatarModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAvatarModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDatabase();
+
+            const userEmail = localStorage.getItem('userEmail');
+            const userId = localStorage.getItem('userId');
+
+            if (!userEmail || !userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            initNav();
+            renderProfile();
+        });
+    </script>
+
+</body>
+</html>

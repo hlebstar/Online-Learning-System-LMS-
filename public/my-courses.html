@@ -1,0 +1,1138 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Мои курсы - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: #E8F4F8;
+            min-height: 100vh;
+        }
+
+        .mainn {
+            padding: 0 50px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0 20px;
+            border-bottom: 1px solid #C5DDE8;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #1A3D4F;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #5BA3C9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a {
+            color: #2C3E50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2B5F7A;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-right a {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right .login-link {
+            color: #2B5F7A;
+        }
+
+        .header-right .login-link:hover {
+            color: #1A3D4F;
+            text-decoration: underline;
+        }
+
+        .header-right .register-link {
+            color: #FFFFFF;
+            background: #3A7B9E;
+            padding: 10px 28px;
+            border-radius: 30px;
+        }
+
+        .header-right .register-link:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 123, 158, 0.3);
+        }
+
+        .header-right .avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 2px solid #5BA3C9;
+        }
+
+        .header-right .avatar-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-wrap {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A3D4F;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #7a9aa8;
+            margin-bottom: 30px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid #C5DDE8;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(43, 95, 122, 0.04);
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2B5F7A;
+        }
+
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: #7a9aa8;
+            margin-top: 4px;
+        }
+
+        .course-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            border: 1px solid #C5DDE8;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(43, 95, 122, 0.04);
+        }
+
+        .course-header {
+            background: #2B5F7A;
+            color: #FFFFFF;
+            padding: 16px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .course-header:hover {
+            opacity: 0.9;
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .course-body {
+            padding: 20px 24px;
+            display: none;
+        }
+
+        .course-body.open {
+            display: block;
+        }
+
+        .progress-bar {
+            background: #F0F6FA;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: #7FC1C5;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #F0F6FA;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .badge-warning {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .badge-secondary {
+            background: #F5F5F5;
+            color: #999;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3A7B9E;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            background: #7FC1C5;
+            color: #1A3D4F;
+        }
+
+        .btn-gold:hover {
+            background: #6db3b7;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #C5DDE8;
+            color: #2C3E50;
+        }
+
+        .btn-outline:hover {
+            border-color: #5BA3C9;
+            background: #F8FBFC;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: #FFFFFF;
+            border-radius: 14px;
+            border: 1px solid #C5DDE8;
+            color: #7a9aa8;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .links {
+            margin-top: 25px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #F0F6FA;
+        }
+
+        .links a {
+            color: #7a9aa8;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .links a:hover {
+            color: #2B5F7A;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.4s ease;
+            z-index: 999;
+            color: #fff;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #1A6B4A;
+        }
+
+        .toast.error {
+            background: #c0392b;
+        }
+
+        .toast.info {
+            background: #2B5F7A;
+        }
+
+        .footer-main {
+            background: #FFFFFF;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 60px 20px;
+            margin-top: 50px;
+            border-top: 1px solid #C5DDE8;
+            box-shadow: 0 -5px 30px rgba(43, 95, 122, 0.04);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            max-width: 1400px;
+            margin: 0 auto 25px;
+        }
+
+        .footer-col h4 {
+            font-weight: 700;
+            font-size: 13px;
+            color: #2B5F7A;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-col p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2C3E50;
+            margin: 0;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: #2C3E50;
+            text-decoration: none;
+            padding: 3px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #2B5F7A;
+            text-decoration: underline;
+        }
+
+        .footer-logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #1A3D4F;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo span {
+            color: #5BA3C9;
+        }
+
+        .footer-desc {
+            font-size: 14px;
+            color: #7a9aa8;
+            line-height: 1.6;
+            max-width: 220px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #EDE5D8;
+            border-bottom: 1px solid #EDE5D8;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+            color: #2C3E50;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-weight: 600;
+        }
+
+        .footer-bottom-left .divider {
+            color: #C5DDE8;
+        }
+
+        .footer-bottom-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .footer-bottom-right a {
+            color: #2B5F7A;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-bottom-right a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-copy {
+            text-align: center;
+            padding-top: 15px;
+            font-size: 13px;
+            color: #7a9aa8;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            .footer-main {
+                padding: 30px 30px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mainn {
+                padding: 0 20px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                padding: 20px 0;
+            }
+            .header-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .nav-links {
+                gap: 20px;
+                font-size: 14px;
+                flex-wrap: wrap;
+            }
+            .header-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .course-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .footer-main {
+                padding: 25px 20px 12px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .footer-desc {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mainn {
+                padding: 0 12px;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .page-title {
+                font-size: 22px;
+            }
+            .course-header {
+                padding: 12px 16px;
+            }
+            .course-title {
+                font-size: 16px;
+            }
+            .course-body {
+                padding: 16px;
+            }
+            .empty-state {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="mainn">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">LMS<span>.</span></a>
+                <div class="nav-links">
+                    <a href="my-courses.html">Содержание</a>
+                    <a href="calendar.html">Календарь</a>
+                    <a href="courses.html">Курсы</a>
+                </div>
+            </div>
+            <div class="header-right" id="navRight">
+                <div id="guestNav">
+                    <a href="login.html" class="login-link">ВХОД</a>
+                    <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+                </div>
+                <div id="userNav" style="display:none;">
+                    <div class="avatar-mini" id="headerAvatar"><span id="headerAvatarText">-</span></div>
+                    <a href="profile.html" class="login-link" style="font-weight:600;"><span id="userNameDisplay">-</span></a>
+                    <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrap">
+            <h1 class="page-title" id="pageTitle">Содержание уроков</h1>
+            <p class="page-subtitle">Выберите курс и начните обучение. Вас ждут интерактивные уроки, тесты и практические задания.</p>
+
+         
+
+            <div id="coursesContainer"></div>
+
+            
+        </div>
+    </main>
+
+    <footer class="footer-main">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">LMS<span>.</span></div>
+                <p class="footer-desc">Современная платформа для онлайн-обучения. Учись когда угодно, где угодно.</p>
+            </div>
+            <div class="footer-col">
+                <h4>EXPLORE</h4>
+                <a href="index.html">Главная</a>
+                <a href="courses.html">Курсы</a>
+                <a href="my-courses.html">Мои курсы</a>
+                <a href="profile.html">Профиль</a>
+            </div>
+            <div class="footer-col">
+                <h4>VISIT</h4>
+                <p>LMS Learning Center<br>123 Education St, Ste 100<br>Moscow, Russia 101000</p>
+            </div>
+            <div class="footer-col">
+                <h4>FOLLOW</h4>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL</h4>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-left"><span>Next: About</span><span class="divider">|</span><span>Be Bold.</span></div>
+            <div class="footer-bottom-right"><span>New Business</span><a href="mailto:engage@lms.com">engage@lms.com</a><span>+7 999 333 3106</span></div>
+        </div>
+        <div class="footer-copy"><p>© 2026 LMS. All Rights Reserved.</p></div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ============================================================
+        // БАЗА ДАННЫХ
+        // ============================================================
+        function getRealUsers() {
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина Иванова', email: 'katya@email.com', role: 'student', active: true },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', role: 'teacher', active: true },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', role: 'curator', active: true },
+                    { id: 4, name: 'Админ', email: 'admin@admin.com', role: 'admin', active: true }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+            return users;
+        }
+
+        function getStudents() {
+            const users = getRealUsers();
+            return users.filter(u => u.role === 'student');
+        }
+
+        function getCourses() {
+            let courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            if (courses.length === 0) {
+                courses = [
+                    { id: 1, title: 'Введение в робототехнику', description: 'Изучите основы робототехники', weight: 1.0 },
+                    { id: 2, title: 'Программирование роботов', description: 'Освойте языки программирования', weight: 1.2 },
+                    { id: 3, title: 'Сенсоры и актуаторы', description: 'Подключение и программирование сенсоров', weight: 0.8 }
+                ];
+                localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            }
+            return courses;
+        }
+
+        function getEnrolledCourses() {
+            return JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+        }
+
+        function getCourseProgress(courseId) {
+            const key = 'courseProgress_' + courseId;
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
+            }
+            return [];
+        }
+
+        function saveCourseProgress(courseId, data) {
+            localStorage.setItem('courseProgress_' + courseId, JSON.stringify(data));
+        }
+
+        function initStudentProgress() {
+            const students = getStudents();
+            const courses = getCourses();
+
+            courses.forEach(course => {
+                let progress = getCourseProgress(course.id);
+                if (progress.length === 0) {
+                    students.forEach(student => {
+                        progress.push({
+                            studentId: student.id,
+                            studentName: student.name,
+                            completed: false,
+                            score: 0
+                        });
+                    });
+                    saveCourseProgress(course.id, progress);
+                }
+            });
+        }
+
+        function getStudentProgressForCourse(courseId, studentId) {
+            const progress = getCourseProgress(courseId);
+            const student = progress.find(p => p.studentId === studentId);
+            if (student) return student;
+            return { studentId: studentId, completed: false, score: 0 };
+        }
+
+        function getCourseStudentsWithProgress(courseId) {
+            const students = getStudents();
+            const progress = getCourseProgress(courseId);
+            return students.map(s => {
+                const p = progress.find(pr => pr.studentId === s.id) || { completed: false, score: 0 };
+                return { ...s, completed: p.completed || false, score: p.score || 0 };
+            });
+        }
+
+        // ============================================================
+        // НАВИГАЦИЯ
+        // ============================================================
+        function initNav() {
+            const userId = localStorage.getItem('userId');
+            const userName = localStorage.getItem('userName');
+
+            if (userId) {
+                document.getElementById('guestNav').style.display = 'none';
+                const userNav = document.getElementById('userNav');
+                userNav.style.display = 'flex';
+                userNav.style.alignItems = 'center';
+                userNav.style.gap = '15px';
+                document.getElementById('userNameDisplay').textContent = userName || 'Пользователь';
+                updateHeaderAvatar();
+            }
+        }
+
+        function updateHeaderAvatar() {
+            const email = localStorage.getItem('userEmail');
+            if (!email) return;
+            const users = getRealUsers();
+            const user = users.find(u => u.email === email);
+            const headerAvatar = document.getElementById('headerAvatar');
+            const textSpan = document.getElementById('headerAvatarText');
+            headerAvatar.innerHTML = '';
+            
+            if (user && user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    headerAvatar.innerHTML = '<span style="font-size:16px;">' + user.avatar.icon + '</span>';
+                    headerAvatar.style.background = user.avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (user.avatar.type === 'upload') {
+                    headerAvatar.innerHTML = '<img src="' + user.avatar.data + '" alt="Avatar">';
+                    headerAvatar.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else if (user) {
+                const parts = user.name.split(' ');
+                const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                textSpan.textContent = initials;
+                textSpan.style.display = 'block';
+                headerAvatar.style.background = '#2B5F7A';
+            }
+        }
+
+        function logout() {
+            if (confirm('Выйти из аккаунта?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function toggleCourse(index) {
+            const body = document.getElementById('courseBody' + index);
+            if (body) body.classList.toggle('open');
+        }
+
+        // ============================================================
+        // ОТОБРАЖЕНИЕ: СТУДЕНТ
+        // ============================================================
+        function renderStudentView() {
+            var titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = 'Содержание уроков';
+
+            const enrolled = getEnrolledCourses();
+            const totalCourses = enrolled.length;
+            let completedCount = 0;
+            const userId = parseInt(localStorage.getItem('userId'));
+
+            const container = document.getElementById('coursesContainer');
+
+            if (totalCourses === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        
+                        <h3>Вы ещё не записаны ни на один курс</h3>
+                        <p>Перейдите в раздел "Все курсы", чтобы выбрать и записаться</p>
+                        <a href="courses.html" class="btn btn-primary" style="margin-top:16px;">Перейти к курсам</a>
+                    </div>
+                `;
+                document.getElementById('statTotal').textContent = '0';
+                document.getElementById('statCompleted').textContent = '0';
+                document.getElementById('statProgress').textContent = '0%';
+                return;
+            }
+
+            let html = '';
+            enrolled.forEach((course, index) => {
+                const progress = getStudentProgressForCourse(course.id, userId);
+                const isCompleted = progress.completed || false;
+                const score = progress.score || 0;
+                if (isCompleted) completedCount++;
+
+                html += `
+                    <div class="course-card">
+                        <div class="course-header" onclick="toggleCourse(${index})">
+                            <span class="course-title">${course.title || 'Курс'}</span>
+                            <span>${isCompleted ? ' Пройден' : ' В процессе'}</span>
+                        </div>
+                        <div class="course-body" id="courseBody${index}">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width:${isCompleted ? 100 : 0}%;"></div>
+                            </div>
+                            <div style="display:flex; gap:20px; margin:16px 0; flex-wrap:wrap;">
+                                <div><strong>Прогресс:</strong> ${isCompleted ? '100%' : '0%'}</div>
+                                <div><strong>Балл:</strong> ${score || '-'}</div>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.location.href='course-detail.html?id=${course.id}'">Перейти к курсу</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            document.getElementById('statTotal').textContent = totalCourses;
+            document.getElementById('statCompleted').textContent = completedCount;
+            document.getElementById('statProgress').textContent = totalCourses > 0 ? Math.round((completedCount / totalCourses) * 100) + '%' : '0%';
+        }
+
+        // ============================================================
+        // ОТОБРАЖЕНИЕ: ПРЕПОДАВАТЕЛЬ
+        // ============================================================
+        function renderTeacherView() {
+            var titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = 'Мои курсы (Преподаватель)';
+
+            const courses = getCourses();
+            const students = getStudents();
+
+            const container = document.getElementById('coursesContainer');
+
+            if (courses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon"></div>
+                        <h3>У вас пока нет курсов</h3>
+                        <p>Создайте курс, чтобы начать обучение студентов</p>
+                        <a href="courses.html" class="btn btn-primary" style="margin-top:16px;">Создать курс</a>
+                    </div>
+                `;
+                document.getElementById('statTotal').textContent = '0';
+                document.getElementById('statCompleted').textContent = '0';
+                document.getElementById('statProgress').textContent = '0%';
+                return;
+            }
+
+            let html = '';
+            let totalStudents = 0;
+            let completedStudents = 0;
+
+            courses.forEach((course, index) => {
+                const courseStudents = getCourseStudentsWithProgress(course.id);
+                const completed = courseStudents.filter(s => s.completed).length;
+                const active = courseStudents.filter(s => !s.completed && s.score > 0).length;
+                totalStudents += courseStudents.length;
+                completedStudents += completed;
+
+                let studentsHtml = '';
+                if (courseStudents.length === 0) {
+                    studentsHtml = '<p style="color:#7a9aa8; padding:12px 0;">Нет студентов на этом курсе</p>';
+                } else {
+                    studentsHtml = courseStudents.map(s => `
+                        <div class="student-item">
+                            <span><strong>${s.name}</strong></span>
+                            <span>Email: ${s.email}</span>
+                            <span>Балл: ${s.score || 0}</span>
+                            <span class="badge ${s.completed ? 'badge-success' : 'badge-warning'}">
+                                ${s.completed ? ' Завершил' : 'В процессе'}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+                html += `
+                    <div class="course-card">
+                        <div class="course-header" onclick="toggleCourse(${index})">
+                            <span class="course-title">${course.title || 'Курс'}</span>
+                            <span>${courseStudents.length} студентов</span>
+                        </div>
+                        <div class="course-body" id="courseBody${index}">
+                            <div style="display:flex; gap:20px; margin-bottom:16px; flex-wrap:wrap;">
+                                <div><strong>Всего студентов:</strong> ${courseStudents.length}</div>
+                                <div><strong>Завершили:</strong> ${completed}</div>
+                                <div><strong>В процессе:</strong> ${active}</div>
+                            </div>
+                            <div class="lessons-list">
+                                <h4 style="margin-bottom:8px; color:#1A3D4F;"> Студенты</h4>
+                                ${studentsHtml}
+                            </div>
+                            <div style="margin-top:16px;">
+                                <button class="btn btn-gold" onclick="window.location.href='teacher.html'"> Панель преподавателя</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            document.getElementById('statTotal').textContent = courses.length;
+            document.getElementById('statCompleted').textContent = completedStudents;
+            document.getElementById('statProgress').textContent = courses.length > 0 ? '100%' : '0%';
+        }
+
+        // ============================================================
+        // ОТОБРАЖЕНИЕ: КУРАТОР
+        // ============================================================
+        function renderCuratorView() {
+            var titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = 'Список студентов (Куратор)';
+
+            const students = getStudents();
+            const container = document.getElementById('coursesContainer');
+
+            if (students.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon"></div>
+                        <h3>Нет студентов</h3>
+                        <p>Студенты пока не зарегистрированы</p>
+                    </div>
+                `;
+                document.getElementById('statTotal').textContent = '0';
+                document.getElementById('statCompleted').textContent = '0';
+                document.getElementById('statProgress').textContent = '0%';
+                return;
+            }
+
+            let html = `
+                <div class="course-card">
+                    <div class="course-header">
+                        <span class="course-title">Все студенты</span>
+                        <span>${students.length} человек</span>
+                    </div>
+                    <div class="course-body open">
+                        <div style="margin-bottom:16px;">
+                            <button class="btn btn-gold" onclick="window.location.href='curator.html'"> Панель куратора</button>
+                        </div>
+                        <div class="lessons-list">
+                            <h4 style="margin-bottom:12px; color:#1A3D4F;">Список студентов</h4>
+            `;
+
+            students.forEach(s => {
+                const progress = getStudentProgressForCourse(1, s.id);
+                const completed = progress.completed || false;
+                const score = progress.score || 0;
+
+                html += `
+                    <div class="student-item">
+                        <span><strong>${s.name}</strong></span>
+                        <span>Email: ${s.email}</span>
+                        <span>Балл: ${score}</span>
+                        <span class="badge ${completed ? 'badge-success' : 'badge-warning'}">
+                            ${completed ? ' Завершил' : ' В процессе'}
+                        </span>
+                    </div>
+                `;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+
+            document.getElementById('statTotal').textContent = students.length;
+            document.getElementById('statCompleted').textContent = students.filter(s => {
+                const p = getStudentProgressForCourse(1, s.id);
+                return p.completed;
+            }).length;
+            document.getElementById('statProgress').textContent = '100%';
+        }
+
+        // ============================================================
+        // ОТОБРАЖЕНИЕ: АДМИН
+        // ============================================================
+        function renderAdminView() {
+            var titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = 'Управление курсами (Админ)';
+
+            const courses = getCourses();
+            const students = getStudents();
+            const container = document.getElementById('coursesContainer');
+
+            if (courses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Курсов пока нет</h3>
+                        <p>Преподаватели ещё не создали курсы</p>
+                    </div>
+                `;
+                document.getElementById('statTotal').textContent = '0';
+                document.getElementById('statCompleted').textContent = '0';
+                document.getElementById('statProgress').textContent = '0%';
+                return;
+            }
+
+            let html = '';
+            courses.forEach((course, index) => {
+                const courseStudents = getCourseStudentsWithProgress(course.id);
+                const completed = courseStudents.filter(s => s.completed).length;
+
+                html += `
+                    <div class="course-card">
+                        <div class="course-header" onclick="toggleCourse(${index})">
+                            <span class="course-title">${course.title || 'Курс'}</span>
+                            <span>${courseStudents.length} студентов</span>
+                        </div>
+                        <div class="course-body" id="courseBody${index}">
+                            <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                                <div><strong>Всего студентов:</strong> ${courseStudents.length}</div>
+                                <div><strong>Завершили:</strong> ${completed}</div>
+                                <div><strong>Вес:</strong> ${course.weight || 1.0}</div>
+                            </div>
+                            <div style="margin-top:16px;">
+                                <button class="btn btn-gold" onclick="window.location.href='admin.html'"> Админ-панель</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            document.getElementById('statTotal').textContent = courses.length;
+            document.getElementById('statCompleted').textContent = students.length;
+            document.getElementById('statProgress').textContent = '100%';
+        }
+
+        // ============================================================
+        // ЗАПУСК
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            getRealUsers();
+            getCourses();
+            initStudentProgress();
+
+            const userRole = localStorage.getItem('userRole') || 'student';
+
+            switch (userRole) {
+                case 'student':
+                    renderStudentView();
+                    break;
+                case 'teacher':
+                    renderTeacherView();
+                    break;
+                case 'curator':
+                    renderCuratorView();
+                    break;
+                case 'admin':
+                    renderAdminView();
+                    break;
+                default:
+                    renderStudentView();
+            }
+
+            initNav();
+        });
+    </script>
+
+</body>
+</html>
+```

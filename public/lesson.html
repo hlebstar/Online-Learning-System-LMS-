@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Урок - LMS</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Corsa Grotesk', 'Raleway', sans-serif; background: #E8F4F8; min-height: 100vh; }
+        .container { max-width: 1000px; margin: 0 auto; background: #FFFFFF; min-height: 100vh; border-left: 1px solid #C5DDE8; border-right: 1px solid #C5DDE8; }
+        .header {
+            background: #2B5F7A; color: white; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .header h1 { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 20px; color: white; }
+        .header a { color: #7FC1C5; text-decoration: none; font-weight: 600; }
+        .header a:hover { text-decoration: underline; }
+        .content { padding: 30px; }
+        .video-placeholder { background: #1A3D4F; border-radius: 15px; padding: 60px; text-align: center; margin-bottom: 30px; color: white; }
+        .video-placeholder .icon { font-size: 48px; margin-bottom: 10px; }
+        .lesson-text { line-height: 1.8; margin-bottom: 30px; font-size: 16px; color: #2C3E50; }
+        .actions { display: flex; gap: 15px; padding: 20px 0; border-top: 1px solid #F0F6FA; flex-wrap: wrap; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-family: 'Raleway', sans-serif; font-weight: 700; transition: all 0.3s; }
+        .btn-primary { background: #3A7B9E; color: white; }
+        .btn-primary:hover { background: #2B5F7A; transform: translateY(-2px); }
+        .btn-success { background: #7FC1C5; color: #1A3D4F; }
+        .btn-success:hover { background: #6db3b7; transform: translateY(-2px); }
+        .btn-warning { background: #F0F6FA; color: #2C3E50; border: 1px solid #C5DDE8; }
+        .btn-warning:hover { background: #e0e6ea; }
+        .quiz-section { background: #F8FBFC; border-radius: 15px; padding: 25px; margin-top: 30px; border: 1px solid #C5DDE8; }
+        .question { margin-bottom: 20px; padding: 15px; background: #FFFFFF; border-radius: 10px; }
+        .question-text { font-weight: bold; margin-bottom: 10px; color: #2B5F7A; }
+        .options { display: flex; flex-direction: column; gap: 8px; }
+        .option { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+        .option:hover { background: #F0F6FA; }
+        .option input { cursor: pointer; }
+        .result-box { margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center; }
+        .result-passed { background: #e8f8f0; color: #1A6B4A; }
+        .result-failed { background: #fde8e8; color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="lessonTitle">Загрузка...</h1>
+            <a href="my-courses.html">← К моим курсам</a>
+        </div>
+        <div class="content">
+            <div class="video-placeholder"><div class="icon">🎬</div><p>Видео урок будет доступен здесь</p><small>В демо-версии используется текстовый формат</small></div>
+            <div class="lesson-text" id="lessonContent">Загрузка содержания урока...</div>
+            <div class="actions">
+                <button class="btn btn-primary" id="prevBtn" onclick="prevLesson()">← Предыдущий</button>
+                <button class="btn btn-success" onclick="completeLesson()">✅ Завершить урок</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextLesson()">Следующий →</button>
+            </div>
+            <div class="quiz-section" id="quizSection" style="display:none;">
+                <h3>📝 Тестирование по уроку</h3>
+                <div id="quizQuestions"></div>
+                <button class="btn btn-warning" onclick="submitQuiz()">📊 Отправить ответы</button>
+                <div id="quizResult"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const userId = localStorage.getItem('userId');
+        if (!userId) window.location.href = 'login.html';
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('courseId');
+        if (!courseId) { alert('Курс не выбран'); window.location.href = 'my-courses.html'; }
+        let lessons = [], currentIndex = 0, completedLessons = new Set();
+        async function loadLesson() {
+            try {
+                const res = await fetch(`/api/courses/${courseId}/lessons`);
+                lessons = await res.json();
+                if (lessons.length === 0) { document.getElementById('lessonContent').innerHTML = '<p>Уроков пока нет</p>'; return; }
+                const lessonId = params.get('lessonId');
+                if (lessonId) {
+                    const idx = lessons.findIndex(l => l.id == lessonId);
+                    if (idx >= 0) currentIndex = idx;
+                }
+                renderLesson();
+            } catch(e) { console.error(e); }
+        }
+        function renderLesson() {
+            if (currentIndex >= lessons.length) { document.getElementById('lessonContent').innerHTML = '<p>Все уроки пройдены! 🎉</p>'; return; }
+            const lesson = lessons[currentIndex];
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('lessonContent').innerHTML = `<h2>${lesson.title}</h2><p>${lesson.content || 'Содержание урока пока не добавлено.'}</p>${lesson.duration ? `<p><small>⏱️ Длительность: ${lesson.duration} минут</small></p>` : ''}`;
+            document.getElementById('prevBtn').style.display = currentIndex > 0 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').style.display = currentIndex < lessons.length - 1 ? 'inline-block' : 'none';
+            if (lesson.hasTest) { document.getElementById('quizSection').style.display = 'block'; loadQuiz(); }
+            else { document.getElementById('quizSection').style.display = 'none'; }
+        }
+        function nextLesson() { if (currentIndex < lessons.length - 1) { currentIndex++; renderLesson(); } }
+        function prevLesson() { if (currentIndex > 0) { currentIndex--; renderLesson(); } }
+        function completeLesson() {
+            if (currentIndex < lessons.length) {
+                completedLessons.add(lessons[currentIndex].id);
+                alert(`✅ Урок "${lessons[currentIndex].title}" завершён!`);
+                fetch('/api/progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: parseInt(userId), course_id: parseInt(courseId), completed_lessons: completedLessons.size, total_lessons: lessons.length })
+                });
+                if (currentIndex < lessons.length - 1) { currentIndex++; renderLesson(); }
+                else { document.getElementById('lessonContent').innerHTML = '<div style="text-align:center; padding:40px;"><h2>🎉 Поздравляем!</h2><p>Вы прошли все уроки!</p><a href="my-courses.html" class="btn btn-primary">Вернуться к курсам</a></div>'; }
+            }
+        }
+        function loadQuiz() {
+            document.getElementById('quizQuestions').innerHTML = `
+                <div class="question"><div class="question-text">1. Что такое LMS?</div><div class="options"><label class="option"><input type="radio" name="q0" value="0"> Система управления обучением</label><label class="option"><input type="radio" name="q0" value="1"> База данных</label></div></div>
+                <div class="question"><div class="question-text">2. Какой метод HTTP используется для получения данных?</div><div class="options"><label class="option"><input type="radio" name="q1" value="0"> POST</label><label class="option"><input type="radio" name="q1" value="1"> GET</label></div></div>
+            `;
+        }
+        function submitQuiz() {
+            document.getElementById('quizResult').innerHTML = '<div class="result-box result-passed">✅ Тест пройден! 85% правильных ответов.</div>';
+        }
+        loadLesson();
+    </script>
+</body>
+</html>

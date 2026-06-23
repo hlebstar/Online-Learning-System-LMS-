@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+           * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: #E8F4F8;
+            min-height: 100vh;
+            display: flex;
+            padding: 0;
+        }
+
+        .sidebar-admin {
+            width: 260px;
+            background: #2B5F7A;
+            min-height: 100vh;
+            padding: 25px 20px;
+            position: sticky;
+            top: 0;
+            flex-shrink: 0;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            border-right: 2px solid #5BA3C9;
+        }
+
+        .sidebar-admin .logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 26px;
+            letter-spacing: 2px;
+            color: #FFFFFF;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(127, 193, 197, 0.25);
+        }
+
+        .sidebar-admin .logo span {
+            color: #7FC1C5;
+        }
+
+        .sidebar-admin .admin-info {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(127, 193, 197, 0.25);
+        }
+
+        .sidebar-admin .admin-info .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #7FC1C5;
+            color: #1A3D4F;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+
+        .sidebar-admin .admin-info .name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .sidebar-admin .admin-info .role {
+            font-size: 12px;
+            color: #C5DDE8;
+        }
+
+        .sidebar-admin .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .sidebar-admin .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: 'Raleway', sans-serif;
+            text-align: left;
+        }
+
+        .sidebar-admin .menu-item:hover {
+            background: rgba(127, 193, 197, 0.2);
+            color: #FFFFFF;
+        }
+
+        .sidebar-admin .menu-item.active {
+            background: rgba(127, 193, 197, 0.25);
+            color: #7FC1C5;
+        }
+
+        .sidebar-admin .menu-item .icon {
+            width: 22px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-admin .menu-item .badge-count {
+            margin-left: auto;
+            background: rgba(127, 193, 197, 0.2);
+            color: #7FC1C5;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .sidebar-admin .menu-divider {
+            border: none;
+            border-top: 1px solid rgba(127, 193, 197, 0.2);
+            margin: 12px 0;
+        }
+
+        .sidebar-admin .logout-btn {
+            margin-top: auto;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .sidebar-admin .logout-btn:hover {
+            color: #7FC1C5;
+            background: rgba(127, 193, 197, 0.1);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-x: hidden;
+            background: #E8F4F8;
+        }
+
+        .main-content .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .main-content .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A3D4F;
+        }
+
+        .main-content .page-header .date-time {
+            font-size: 14px;
+            color: #7a9aa8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 20px 18px;
+            border: 1px solid #C5DDE8;
+            box-shadow: 0 2px 8px rgba(43, 95, 122, 0.06);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(43, 95, 122, 0.1);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A3D4F;
+        }
+
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: #7a9aa8;
+        }
+
+        .stat-card .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        .stat-change.up {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .stat-change.down {
+            background: #FDE8E8;
+            color: #c0392b;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            border: 1px solid #C5DDE8;
+            padding: 22px;
+            box-shadow: 0 2px 8px rgba(43, 95, 122, 0.06);
+        }
+
+        .chart-card .chart-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A3D4F;
+            margin-bottom: 15px;
+        }
+
+        .chart-card canvas {
+            max-height: 220px;
+            max-width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            border: 1px solid #C5DDE8;
+            padding: 22px 25px;
+            box-shadow: 0 2px 8px rgba(43, 95, 122, 0.06);
+        }
+
+        .tab-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tab-card .card-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1A3D4F;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 16px;
+            border: 1.5px solid #C5DDE8;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            background: #F8FBFC;
+            transition: 0.3s;
+            color: #2C3E50;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #5BA3C9;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(91, 163, 201, 0.12);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: #F0F6FA;
+        }
+
+        th {
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: #1A3D4F;
+            border-bottom: 2px solid #C5DDE8;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #EDE5D8;
+            color: #2C3E50;
+            font-size: 13px;
+        }
+
+        tr:hover td {
+            background: #F8FBFC;
+        }
+
+        .badge {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: #FCE4EC;
+            color: #C2185B;
+        }
+
+        .badge-teacher {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .badge-curator {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .badge-student {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3A7B9E;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(58, 123, 158, 0.3);
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #a93226;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #7FC1C5;
+            color: #1A3D4F;
+        }
+
+        .btn-success:hover {
+            background: #6db3b7;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #C5DDE8;
+            color: #2C3E50;
+        }
+
+        .btn-outline:hover {
+            border-color: #5BA3C9;
+            background: #F8FBFC;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .btn-gold {
+            background: #7FC1C5;
+            color: #1A3D4F;
+        }
+
+        .btn-gold:hover {
+            background: #6db3b7;
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 61, 79, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-box h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A3D4F;
+            margin-bottom: 6px;
+        }
+
+        .modal-box p {
+            color: #7a9aa8;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .modal-box input,
+        .modal-box select {
+            width: 100%;
+            padding: 11px 16px;
+            border: 1.5px solid #C5DDE8;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            background: #F8FBFC;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .modal-box input:focus,
+        .modal-box select:focus {
+            outline: none;
+            border-color: #5BA3C9;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(91, 163, 201, 0.12);
+        }
+
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 999;
+            color: #fff;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #1A6B4A;
+        }
+
+        .toast.error {
+            background: #c0392b;
+        }
+
+        .toast.info {
+            background: #2B5F7A;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 1024px) {
+            .sidebar-admin {
+                width: 220px;
+                padding: 20px 14px;
+            }
+            .main-content {
+                padding: 20px 25px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar-admin {
+                width: 100%;
+                min-height: auto;
+                position: static;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 15px 20px;
+                gap: 8px;
+                align-items: center;
+                border-right: none;
+                border-bottom: 2px solid #5BA3C9;
+            }
+            .sidebar-admin .logo {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+                font-size: 20px;
+                margin-right: auto;
+            }
+            .sidebar-admin .admin-info {
+                display: none;
+            }
+            .sidebar-admin .menu-label {
+                display: none;
+            }
+            .sidebar-admin .menu-item {
+                padding: 8px 14px;
+                font-size: 13px;
+                width: auto;
+            }
+            .sidebar-admin .logout-btn {
+                margin-top: 0;
+            }
+            .sidebar-admin .menu-divider {
+                display: none;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .tab-card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-admin .menu-item {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar-admin">
+        <a href="index.html" class="logo">LMS<span>.</span></a>
+
+        <div class="admin-info">
+            <div class="avatar" id="adminAvatar">АД</div>
+            <div class="name" id="adminName">Администратор</div>
+            <div class="role">Администратор</div>
+        </div>
+
+        <div class="menu-label">Главная</div>
+        <button class="menu-item active" onclick="switchTab('dashboard', this)">
+            <span class="icon"><i class="fas fa-chart-pie"></i></span> Дашборд
+        </button>
+
+        <div class="menu-label">Управление</div>
+        <button class="menu-item" onclick="switchTab('users', this)">
+            <span class="icon"><i class="fas fa-users"></i></span> Пользователи
+            <span class="badge-count" id="userCount">0</span>
+        </button>
+        <button class="menu-item" onclick="switchTab('courses', this)">
+            <span class="icon"><i class="fas fa-book"></i></span> Курсы
+            <span class="badge-count" id="courseCount">0</span>
+        </button>
+        <button class="menu-item" onclick="switchTab('results', this)">
+            <span class="icon"><i class="fas fa-chart-bar"></i></span> Результаты
+        </button>
+
+        <div class="menu-label">Система</div>
+        <button class="menu-item" onclick="switchTab('settings', this)">
+            <span class="icon"><i class="fas fa-cog"></i></span> Настройки
+        </button>
+
+        <hr class="menu-divider">
+
+        <button class="menu-item logout-btn" onclick="logout()">
+            <span class="icon"><i class="fas fa-sign-out-alt"></i></span> Выйти
+        </button>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <h1 id="pageTitle"> Дашборд</h1>
+            <span class="date-time" id="currentDateTime"></span>
+        </div>
+
+        <div class="tab-content active" id="tab-dashboard">
+
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statUsers">0</div>
+                    <div class="stat-label">Пользователей</div>
+                    <div class="stat-change up"> 12%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statStudents">0</div>
+                    <div class="stat-label">Студентов</div>
+                    <div class="stat-change up"> 8%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statCourses">0</div>
+                    <div class="stat-label">Курсов</div>
+                    <div class="stat-change up"> 5%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statResults">0</div>
+                    <div class="stat-label">Результатов</div>
+                    <div class="stat-change down">2%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statAvgScore">0</div>
+                    <div class="stat-label">Средний балл</div>
+                    <div class="stat-change up">3%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div class="stat-number" id="statDAU">0</div>
+                    <div class="stat-label">DAU (сегодня)</div>
+                    <div class="stat-change up"> 15%</div>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-title"> Распределение пользователей по ролям</div>
+                    <canvas id="rolesChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"> Активность за последние 7 дней</div>
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="card-header">
+                    <h3> Последние события</h3>
+                    <button class="btn btn-outline btn-sm" onclick="loadDashboard()"> Обновить</button>
+                </div>
+                <div id="recentActivity">
+                    <p style="color:#8A7A6A; padding:10px 0;">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-users">
+            <div class="tab-card">
+                <div class="card-header">
+                    <h3> Управление пользователями</h3>
+                    <button class="btn btn-gold" onclick="openAddUserModal()"> Добавить</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="userSearch" placeholder="Поиск по имени или email..." oninput="filterUsers()">
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-courses">
+            <div class="tab-card">
+                <div class="card-header">
+                    <h3>Управление курсами</h3>
+                    <button class="btn btn-gold" onclick="openAddCourseModal()"> Создать</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="courseSearch" placeholder="Поиск курса..." oninput="filterCourses()">
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Название</th><th>Вес</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody id="coursesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-results">
+            <div class="tab-card">
+                <div class="card-header">
+                    <h3> Результаты студентов</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Студент</th><th>Курс</th><th>Оценка</th><th>Дата</th></tr>
+                        </thead>
+                        <tbody id="resultsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-settings">
+            <div class="tab-card">
+                <div class="card-header">
+                    <h3> Настройки системы</h3>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:10px;">
+                    <div style="background:#FAF8F5; padding:18px; border-radius:12px; border:1px solid #EDE5D8;">
+                        <h4 style="color:#1A2A3A; margin-bottom:8px;"> Очистка данных</h4>
+                        <p style="font-size:13px; color:#8A7A6A; margin-bottom:12px;">Удалить все результаты тестов</p>
+                        <button class="btn btn-danger btn-sm" onclick="clearResults()">Очистить</button>
+                    </div>
+                    <div style="background:#FAF8F5; padding:18px; border-radius:12px; border:1px solid #EDE5D8;">
+                        <h4 style="color:#1A2A3A; margin-bottom:8px;">Экспорт</h4>
+                        <p style="font-size:13px; color:#8A7A6A; margin-bottom:12px;">Экспортировать все данные в JSON</p>
+                        <button class="btn btn-primary btn-sm" onclick="exportData()"> Экспорт</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal-box">
+            <h3> Добавить пользователя</h3>
+            <p>Заполните данные нового пользователя</p>
+            <input type="text" id="newUserName" placeholder="Имя">
+            <input type="email" id="newUserEmail" placeholder="Email">
+            <input type="password" id="newUserPassword" placeholder="Пароль">
+            <select id="newUserRole">
+                <option value="student">Студент</option>
+                <option value="teacher">Преподаватель</option>
+                <option value="curator">Куратор</option>
+                <option value="admin">Администратор</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('addUserModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="addUser()">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addCourseModal">
+        <div class="modal-box">
+            <h3> Создать курс</h3>
+            <p>Введите данные нового курса</p>
+            <input type="text" id="newCourseTitle" placeholder="Название курса">
+            <input type="text" id="newCourseDesc" placeholder="Описание курса">
+            <input type="number" id="newCourseWeight" placeholder="Вес" step="0.1" value="1.0">
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('addCourseModal')">Отмена</button>
+                <button class="btn btn-primary" onclick="addCourse()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        (function() {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'admin') {
+                alert(' Доступ запрещён! Только для администраторов.');
+                window.location.href = 'index.html';
+            }
+        })();
+
+        function switchTab(tabName, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.sidebar-admin .menu-item').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            if (btn) {
+                btn.classList.add('active');
+            }
+
+            const titles = {
+                'dashboard': ' Дашборд',
+                'users': 'Пользователи',
+                'courses': ' Курсы',
+                'results': ' Результаты',
+                'settings': 'Настройки'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName] || 'Админ-панель';
+
+            if (tabName === 'users') loadUsers();
+            if (tabName === 'courses') loadCourses();
+            if (tabName === 'results') loadResults();
+            if (tabName === 'dashboard') loadDashboard();
+        }
+
+        let rolesChartInstance = null;
+        let activityChartInstance = null;
+
+        function loadDashboard() {
+            const users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            const courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            const events = JSON.parse(localStorage.getItem('calendar_events_all') || '[]');
+
+            const students = users.filter(u => u.role === 'student').length;
+            const teachers = users.filter(u => u.role === 'teacher').length;
+            const curators = users.filter(u => u.role === 'curator').length;
+            const admins = users.filter(u => u.role === 'admin').length;
+            const testResults = events.filter(e => e.type === 'test' || (e.action && e.action.includes('тест')));
+
+            document.getElementById('statUsers').textContent = users.length || 0;
+            document.getElementById('statStudents').textContent = students;
+            document.getElementById('statCourses').textContent = courses.length || 0;
+            document.getElementById('statResults').textContent = testResults.length;
+            document.getElementById('statAvgScore').textContent = testResults.length > 0 ? '76' : '0';
+            document.getElementById('statDAU').textContent = Math.min(users.length, 5) + 3;
+
+            document.getElementById('userCount').textContent = users.length;
+            document.getElementById('courseCount').textContent = courses.length;
+
+            const recent = events.slice(0, 7);
+            const container = document.getElementById('recentActivity');
+
+            if (recent.length === 0) {
+                container.innerHTML = '<p style="color:#8A7A6A; padding:10px 0;">Нет событий</p>';
+            } else {
+                container.innerHTML = recent.map(e => `
+                        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #EDE5D8;">
+                            <span>${e.userName || 'Пользователь'} — ${e.action || 'активность'}</span>
+                            <span style="color:#8A7A6A; font-size:13px;">${new Date(e.date).toLocaleDateString('ru-RU')}</span>
+                        </div>
+                    `).join('');
+            }
+
+            const ctx1 = document.getElementById('rolesChart').getContext('2d');
+            if (rolesChartInstance) {
+                rolesChartInstance.destroy();
+            }
+            rolesChartInstance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Студенты', 'Преподаватели', 'Кураторы', 'Администраторы'],
+                    datasets: [{
+                        data: [students, teachers, curators, admins],
+                        backgroundColor: ['#3A7A9A', '#5A8A6A', '#C5A87C', '#A05040'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 12 }, padding: 15 }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            const dayData = days.map(() => Math.floor(Math.random() * 10) + 1);
+
+            const ctx2 = document.getElementById('activityChart').getContext('2d');
+            if (activityChartInstance) {
+                activityChartInstance.destroy();
+            }
+            activityChartInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Активность',
+                        data: dayData,
+                        backgroundColor: '#1A2A3A',
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 2 }
+                        }
+                    }
+                }
+            });
+        }
+
+        let allUsers = [];
+
+        function loadUsers() {
+            allUsers = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            renderUsers(allUsers);
+            document.getElementById('userCount').textContent = allUsers.length;
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (users.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="5" style="text-align:center; padding:30px; color:#8A7A6A;">Нет пользователей</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${u.id}</td>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.email}</td>
+                        <td><span class="badge badge-${u.role}">${u.role}</span></td>
+                        <td>
+                            <select onchange="changeRole(${u.id}, this.value)" style="padding:4px 8px; border-radius:6px; border:1px solid #D4C5B5;">
+                                <option value="student" ${u.role === 'student' ? 'selected' : ''}>student</option>
+                                <option value="teacher" ${u.role === 'teacher' ? 'selected' : ''}>teacher</option>
+                                <option value="curator" ${u.role === 'curator' ? 'selected' : ''}>curator</option>
+                                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+                            </select>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})"></button>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        function filterUsers() {
+            const search = document.getElementById('userSearch').value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                u.name.toLowerCase().includes(search) ||
+                u.email.toLowerCase().includes(search)
+            );
+            renderUsers(filtered);
+        }
+
+        function changeRole(id, role) {
+            if (!confirm('Изменить роль пользователя?')) return;
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            users = users.map(u => {
+                if (u.id === id) u.role = role;
+                return u;
+            });
+            localStorage.setItem('lms_users', JSON.stringify(users));
+            showToast('Роль изменена', 'success');
+            loadUsers();
+            loadDashboard();
+        }
+
+        function deleteUser(id) {
+            if (!confirm('Удалить пользователя?')) return;
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            users = users.filter(u => u.id !== id);
+            localStorage.setItem('lms_users', JSON.stringify(users));
+            showToast('Пользователь удалён', 'success');
+            loadUsers();
+            loadDashboard();
+        }
+
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.add('active');
+            document.getElementById('newUserName').value = '';
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('newUserRole').value = 'student';
+        }
+
+        function addUser() {
+            const name = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const password = document.getElementById('newUserPassword').value.trim();
+            const role = document.getElementById('newUserRole').value;
+
+            if (!name || !email || !password) {
+                showToast('Заполните все поля', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showToast('Пароль минимум 4 символа', 'error');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            users.push({
+                id: Date.now(),
+                name: name,
+                email: email,
+                role: role,
+                active: true
+            });
+            localStorage.setItem('lms_users', JSON.stringify(users));
+
+            showToast(' Пользователь добавлен', 'success');
+            closeModal('addUserModal');
+            loadUsers();
+            loadDashboard();
+        }
+
+        let allCourses = [];
+
+        function loadCourses() {
+            allCourses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            renderCourses(allCourses);
+            document.getElementById('courseCount').textContent = allCourses.length;
+        }
+
+        function renderCourses(courses) {
+            const tbody = document.getElementById('coursesTableBody');
+            if (courses.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="4" style="text-align:center; padding:30px; color:#8A7A6A;">Нет курсов</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = courses.map(c => `
+                    <tr>
+                        <td>${c.id}</td>
+                        <td><strong>${c.title}</strong></td>
+                        <td>${c.weight || 1.0}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})"></button>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        function filterCourses() {
+            const search = document.getElementById('courseSearch').value.toLowerCase();
+            const filtered = allCourses.filter(c =>
+                c.title.toLowerCase().includes(search)
+            );
+            renderCourses(filtered);
+        }
+
+        function openAddCourseModal() {
+            document.getElementById('addCourseModal').classList.add('active');
+            document.getElementById('newCourseTitle').value = '';
+            document.getElementById('newCourseDesc').value = '';
+            document.getElementById('newCourseWeight').value = '1.0';
+        }
+
+        function addCourse() {
+            const title = document.getElementById('newCourseTitle').value.trim();
+            const description = document.getElementById('newCourseDesc').value.trim();
+            const weight = parseFloat(document.getElementById('newCourseWeight').value) || 1.0;
+
+            if (!title) {
+                showToast(' Введите название курса', 'error');
+                return;
+            }
+
+            let courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            courses.push({
+                id: Date.now(),
+                title: title,
+                description: description,
+                weight: weight
+            });
+            localStorage.setItem('teacherCourses', JSON.stringify(courses));
+
+            showToast(' Курс создан', 'success');
+            closeModal('addCourseModal');
+            loadCourses();
+            loadDashboard();
+        }
+
+        function deleteCourse(id) {
+            if (!confirm('Удалить курс?')) return;
+
+            let courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            courses = courses.filter(c => c.id !== id);
+            localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            showToast(' Курс удалён', 'success');
+            loadCourses();
+            loadDashboard();
+        }
+
+        function loadResults() {
+            const tbody = document.getElementById('resultsTableBody');
+            const events = JSON.parse(localStorage.getItem('calendar_events_all') || '[]');
+            const testEvents = events.filter(e => e.type === 'test' || (e.action && e.action.includes('тест')));
+
+            if (testEvents.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="4" style="text-align:center; padding:30px; color:#8A7A6A;">Нет результатов</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = testEvents.slice(0, 20).map(e => {
+                const scoreMatch = e.action ? e.action.match(/\d+/) : null;
+                const score = scoreMatch ? scoreMatch[0] : '—';
+                return `
+                        <tr>
+                            <td>${e.userName || 'Неизвестно'}</td>
+                            <td>${e.course || '—'}</td>
+                            <td>${score}%</td>
+                            <td>${new Date(e.date).toLocaleDateString('ru-RU')}</td>
+                        </tr>
+                    `;
+            }).join('');
+        }
+
+        function clearResults() {
+            if (!confirm('Удалить все результаты?')) return;
+
+            const events = JSON.parse(localStorage.getItem('calendar_events_all') || '[]');
+            const filtered = events.filter(e => e.type !== 'test' && !(e.action && e.action.includes('тест')));
+            localStorage.setItem('calendar_events_all', JSON.stringify(filtered));
+
+            showToast(' Результаты очищены', 'success');
+            loadResults();
+            loadDashboard();
+        }
+
+        function exportData() {
+            const data = {
+                users: JSON.parse(localStorage.getItem('lms_users') || '[]'),
+                courses: JSON.parse(localStorage.getItem('teacherCourses') || '[]'),
+                events: JSON.parse(localStorage.getItem('calendar_events_all') || '[]'),
+                enrolled: JSON.parse(localStorage.getItem('enrolledCourses') || '[]'),
+                exportedAt: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lms_export_' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast(' Данные экспортированы', 'success');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        let toastTimer;
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function logout() {
+            if (confirm('Выйти из аккаунта?')) {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const userName = localStorage.getItem('userName') || 'Администратор';
+            document.getElementById('adminName').textContent = userName;
+
+            const parts = userName.split(' ');
+            if (parts.length >= 2) {
+                document.getElementById('adminAvatar').textContent = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+            } else {
+                document.getElementById('adminAvatar').textContent = userName.substring(0, 2).toUpperCase();
+            }
+
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('ru-RU') + ' ' + now
+                .toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина ', email: 'katya@email.com', role: 'student', active: true },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', role: 'teacher', active: true },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', role: 'curator', active: true },
+                    { id: 4, name: 'Админ', email: 'admin@admin.com', role: 'admin', active: true }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+
+            loadDashboard();
+            loadUsers();
+            loadCourses();
+            loadResults();
+
+            showToast(' Добро пожаловать в админ-панель!', 'info');
+        });
+    </script>
+
+</body>
+</html>

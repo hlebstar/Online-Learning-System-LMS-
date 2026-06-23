@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Преподаватель - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: #E8F4F8;
+            min-height: 100vh;
+        }
+
+        .mainn {
+            padding: 0 50px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0 20px;
+            border-bottom: 1px solid #C5DDE8;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #1A3D4F;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #5BA3C9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .nav-links a {
+            color: #2C3E50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2B5F7A;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-right a {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right .login-link {
+            color: #2B5F7A;
+        }
+
+        .header-right .login-link:hover {
+            color: #1A3D4F;
+            text-decoration: underline;
+        }
+
+        .header-right .register-link {
+            color: #FFFFFF;
+            background: #3A7B9E;
+            padding: 10px 28px;
+            border-radius: 30px;
+        }
+
+        .header-right .register-link:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 123, 158, 0.3);
+        }
+
+        .header-right .avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 2px solid #5BA3C9;
+            flex-shrink: 0;
+        }
+
+        .header-right .avatar-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .teacher-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 30px 35px;
+            border: 1px solid #C5DDE8;
+            box-shadow: 0 5px 15px rgba(43, 95, 122, 0.05);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .profile-avatar-teacher {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #2B5F7A;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            overflow: hidden;
+            border: 3px solid #5BA3C9;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-teacher img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-info-teacher {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            padding: 12px 18px;
+            background: #F8FBFC;
+            border-radius: 10px;
+            border: 1px solid #F0F6FA;
+        }
+
+        .info-item .label {
+            color: #7a9aa8;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .info-item .value {
+            color: #1A3D4F;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .main-content {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #C5DDE8;
+            box-shadow: 0 5px 15px rgba(43, 95, 122, 0.05);
+            padding: 30px 35px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #F0F6FA;
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: #7a9aa8;
+            font-family: 'Raleway', sans-serif;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #2B5F7A;
+            background: #F8FBFC;
+        }
+
+        .tab-btn.active {
+            color: #2B5F7A;
+            background: #F0F6FA;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -17px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: #2B5F7A;
+            border-radius: 3px;
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content h3 {
+            color: #1A3D4F;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .course-card {
+            background: #F8FBFC;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #F0F6FA;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .course-card:hover {
+            border-color: #C5DDE8;
+            background: #FFFFFF;
+        }
+
+        .course-card .course-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .course-card .course-info h4 {
+            color: #1A3D4F;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .course-card .course-info p {
+            color: #7a9aa8;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+
+        .course-card .course-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #7a9aa8;
+            flex-wrap: wrap;
+        }
+
+        .course-card .course-meta strong {
+            color: #2C3E50;
+        }
+
+        .course-card .course-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3A7B9E;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #a93226;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #2E7D32;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1B5E20;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 5px 14px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #C5DDE8;
+            border-radius: 10px;
+            background: #F8FBFC;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            color: #1A3D4F;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #5BA3C9;
+            box-shadow: 0 0 0 3px rgba(91, 163, 201, 0.1);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: #2C3E50;
+            margin-bottom: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7a9aa8;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #C5DDE8;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.4s ease;
+            z-index: 999;
+            color: #fff;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #1A6B4A;
+        }
+        .toast.error {
+            background: #c0392b;
+        }
+        .toast.info {
+            background: #2B5F7A;
+        }
+
+        .footer-main {
+            background: #FFFFFF;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 60px 20px;
+            margin-top: 0;
+            border-top: 1px solid #C5DDE8;
+            box-shadow: 0 -5px 30px rgba(43, 95, 122, 0.04);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            max-width: 1400px;
+            margin: 0 auto 25px;
+        }
+
+        .footer-col h4 {
+            font-weight: 700;
+            font-size: 13px;
+            color: #2B5F7A;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-col p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2C3E50;
+            margin: 0;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: #2C3E50;
+            text-decoration: none;
+            padding: 3px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #2B5F7A;
+            text-decoration: underline;
+        }
+
+        .footer-logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #1A3D4F;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo span {
+            color: #5BA3C9;
+        }
+
+        .footer-desc {
+            font-size: 14px;
+            color: #7a9aa8;
+            line-height: 1.6;
+            max-width: 220px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #EDE5D8;
+            border-bottom: 1px solid #EDE5D8;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+            color: #2C3E50;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-weight: 600;
+        }
+
+        .footer-bottom-left .divider {
+            color: #C5DDE8;
+        }
+
+        .footer-bottom-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .footer-bottom-right a {
+            color: #2B5F7A;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-bottom-right a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-copy {
+            text-align: center;
+            padding-top: 15px;
+            font-size: 13px;
+            color: #7a9aa8;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+            .profile-avatar-teacher {
+                margin: 0 auto;
+            }
+            .profile-info-teacher {
+                grid-template-columns: 1fr 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mainn {
+                padding: 0 20px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                padding: 20px 0;
+                margin-bottom: 25px;
+            }
+            .header-left {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .nav-links {
+                gap: 20px;
+                font-size: 14px;
+                flex-wrap: wrap;
+            }
+            .header-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .profile-card {
+                padding: 20px;
+            }
+            .profile-info-teacher {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .tabs {
+                gap: 4px;
+            }
+            .tab-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .tab-btn.active::after {
+                bottom: -13px;
+                width: 20px;
+            }
+            .course-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .course-card .course-actions {
+                justify-content: flex-end;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .footer-main {
+                padding: 25px 20px 12px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .footer-desc {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mainn {
+                padding: 0 12px;
+            }
+            .header {
+                padding: 15px 0;
+                margin-bottom: 20px;
+            }
+            .nav-links {
+                gap: 12px;
+                font-size: 13px;
+            }
+            .profile-card {
+                padding: 16px;
+            }
+            .profile-avatar-teacher {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            .info-item .value {
+                font-size: 15px;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .tab-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            .course-card {
+                padding: 14px 16px;
+            }
+            .course-card .course-info h4 {
+                font-size: 15px;
+            }
+            .course-card .course-meta {
+                font-size: 12px;
+                gap: 12px;
+            }
+            .footer-main {
+                padding: 20px 15px 10px;
+                border-radius: 16px 16px 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="mainn">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">LMS<span>.</span></a>
+                <div class="nav-links">
+                    <a href="my-courses.html">Содержание</a>
+                    <a href="calendar.html">Календарь</a>
+                    <a href="courses.html">Курсы</a>
+                </div>
+            </div>
+            <div class="header-right" id="navRight">
+                <div id="guestNav">
+                    <a href="login.html" class="login-link">ВХОД</a>
+                    <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+                </div>
+                <div id="userNav" style="display:none;">
+                    <div class="avatar-mini" id="headerAvatar"><span id="headerAvatarText">-</span></div>
+                    <a href="profile.html" class="login-link" style="font-weight:600;"><span id="userNameDisplay">-</span></a>
+                    <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="teacher-wrapper">
+            <div class="profile-card">
+                <div class="profile-avatar-teacher" id="teacherAvatar">
+                    <span id="teacherAvatarText">-</span>
+                </div>
+                <div class="profile-info-teacher">
+                    <div class="info-item">
+                        <span class="label">Имя</span>
+                        <span class="value" id="userName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Email</span>
+                        <span class="value" id="userEmail">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Роль</span>
+                        <span class="value">Преподаватель</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('courses', this)">Мои курсы</button>
+                    <button class="tab-btn" onclick="switchTab('students', this)">Прогресс студентов</button>
+                    <button class="tab-btn" onclick="switchTab('add', this)">Создать курс</button>
+                    <button class="tab-btn" onclick="switchTab('lessons', this)">Управление уроками</button>
+                </div>
+
+                <div id="tab-courses" class="tab-content active">
+                    <div id="coursesList"></div>
+                </div>
+
+                <div id="tab-students" class="tab-content">
+                    <div class="form-group">
+                        <select id="selectCourse" onchange="loadStudents()">
+                            <option value="">Выберите курс</option>
+                        </select>
+                    </div>
+                    <div id="studentsList"><p style="color:#7a9aa8;">Выберите курс для просмотра</p></div>
+                </div>
+
+                <div id="tab-add" class="tab-content">
+                    <div class="form-group">
+                        <input type="text" id="courseTitle" placeholder="Название курса">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="courseDesc" rows="3" placeholder="Описание курса"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="courseWeight" placeholder="Вес" step="0.1" value="1.0">
+                    </div>
+                    <button class="btn btn-primary" onclick="addCourse()">Создать курс</button>
+                </div>
+
+                <div id="tab-lessons" class="tab-content">
+                    <div class="form-group">
+                        <select id="lessonCourseId">
+                            <option value="">Выберите курс</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="lessonTitle" placeholder="Название урока">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="lessonContent" rows="3" placeholder="Содержание урока"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" id="lessonDuration" placeholder="Длительность (минут)">
+                        </div>
+                        <div class="form-group">
+                            <select id="lessonType">
+                                <option value="theory">Теория</option>
+                                <option value="test">Тест</option>
+                                <option value="task">Задание</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addLesson()">Добавить урок</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-main">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">LMS<span>.</span></div>
+                <p class="footer-desc">Современная платформа для онлайн-обучения. Учись когда угодно, где угодно.</p>
+            </div>
+            <div class="footer-col">
+                <h4>EXPLORE</h4>
+                <a href="index.html">Главная</a>
+                <a href="courses.html">Курсы</a>
+                <a href="my-courses.html">Мои курсы</a>
+                <a href="profile.html">Профиль</a>
+            </div>
+            <div class="footer-col">
+                <h4>VISIT</h4>
+                <p>LMS Learning Center<br>123 Education St, Ste 100<br>Moscow, Russia 101000</p>
+            </div>
+            <div class="footer-col">
+                <h4>FOLLOW</h4>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL</h4>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-left"><span>Next: About</span><span class="divider">|</span><span>Be Bold.</span></div>
+            <div class="footer-bottom-right"><span>New Business</span><a href="mailto:engage@lms.com">engage@lms.com</a><span>+7 999 333 3106</span></div>
+        </div>
+        <div class="footer-copy"><p>© 2026 LMS. All Rights Reserved.</p></div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function getRealUsers() {
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина Иванова', email: 'katya@email.com', password: '123456', role: 'student', active: true, avatar: null },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', password: '123456', role: 'teacher', active: true, avatar: null },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', password: '123456', role: 'curator', active: true, avatar: null },
+                    { id: 4, name: 'Администратор', email: 'admin@admin.com', password: 'admin123', role: 'admin', active: true, avatar: null }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+            return users;
+        }
+
+        function getStudents() {
+            const users = getRealUsers();
+            return users.filter(u => u.role === 'student');
+        }
+
+        function getCourses() {
+            let courses = JSON.parse(localStorage.getItem('teacherCourses') || '[]');
+            if (courses.length === 0) {
+                courses = [
+                    { id: 1, title: 'Введение в робототехнику', description: 'Изучите основы робототехники', weight: 1.0, lessons: [] },
+                    { id: 2, title: 'Программирование роботов', description: 'Освойте языки программирования', weight: 1.2, lessons: [] }
+                ];
+                localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            }
+            return courses;
+        }
+
+        function getCourseProgress(courseId) {
+            const key = 'courseProgress_' + courseId;
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
+            }
+            return [];
+        }
+
+        function saveCourseProgress(courseId, data) {
+            localStorage.setItem('courseProgress_' + courseId, JSON.stringify(data));
+        }
+
+        function initStudentProgress() {
+            const students = getStudents();
+            const courses = getCourses();
+
+            courses.forEach(course => {
+                let progress = getCourseProgress(course.id);
+                if (progress.length === 0) {
+                    students.forEach(student => {
+                        progress.push({
+                            studentId: student.id,
+                            studentName: student.name,
+                            completed: false,
+                            score: 0
+                        });
+                    });
+                    saveCourseProgress(course.id, progress);
+                }
+            });
+        }
+
+        function getCourseStudentsWithProgress(courseId) {
+            const students = getStudents();
+            const progress = getCourseProgress(courseId);
+            return students.map(s => {
+                const p = progress.find(pr => pr.studentId === s.id) || { completed: false, score: 0 };
+                return { ...s, completed: p.completed || false, score: p.score || 0 };
+            });
+        }
+
+        function logout() {
+            if (confirm('Выйти из аккаунта?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        function loadProfile() {
+            const email = localStorage.getItem('userEmail');
+            const users = getRealUsers();
+            const user = users.find(u => u.email === email);
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+                updateTeacherAvatar(user);
+                document.getElementById('userNameDisplay').textContent = user.name;
+            }
+        }
+
+        function updateTeacherAvatar(user) {
+            const avatar = document.getElementById('teacherAvatar');
+            const textSpan = document.getElementById('teacherAvatarText');
+            avatar.innerHTML = '';
+
+            if (user && user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    avatar.innerHTML = `<span style="font-size:36px;">${user.avatar.icon}</span>`;
+                    avatar.style.background = user.avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (user.avatar.type === 'upload') {
+                    avatar.innerHTML = `<img src="${user.avatar.data}" alt="Avatar">`;
+                    avatar.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else if (user) {
+                const parts = user.name.split(' ');
+                const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                textSpan.textContent = initials;
+                textSpan.style.display = 'block';
+                avatar.style.background = '#2B5F7A';
+            }
+
+            updateHeaderAvatar(user);
+        }
+
+        function updateHeaderAvatar(user) {
+            const headerAvatar = document.getElementById('headerAvatar');
+            const textSpan = document.getElementById('headerAvatarText');
+            headerAvatar.innerHTML = '';
+
+            if (user && user.avatar) {
+                if (user.avatar.type === 'preset') {
+                    headerAvatar.innerHTML = `<span style="font-size:16px;">${user.avatar.icon}</span>`;
+                    headerAvatar.style.background = user.avatar.color;
+                    textSpan.style.display = 'none';
+                } else if (user.avatar.type === 'upload') {
+                    headerAvatar.innerHTML = `<img src="${user.avatar.data}" alt="Avatar">`;
+                    headerAvatar.style.background = 'transparent';
+                    textSpan.style.display = 'none';
+                }
+            } else if (user) {
+                const parts = user.name.split(' ');
+                const initials = parts.length >= 2 ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase() : user.name.substring(0, 2).toUpperCase();
+                textSpan.textContent = initials;
+                textSpan.style.display = 'block';
+                headerAvatar.style.background = '#2B5F7A';
+            }
+        }
+
+        function loadCourses() {
+            const courses = getCourses();
+            const list = document.getElementById('coursesList');
+
+            if (courses.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-book"></i></div><p>У вас пока нет курсов</p></div>';
+                return;
+            }
+
+            list.innerHTML = courses.map((c) => {
+                const students = getCourseStudentsWithProgress(c.id);
+                const completed = students.filter(s => s.completed).length;
+                return `
+                    <div class="course-card">
+                        <div class="course-info">
+                            <h4>${c.title}</h4>
+                            <p>${c.description || 'Нет описания'}</p>
+                            <div class="course-meta">
+                                <span><strong>Вес:</strong> ${c.weight || 1.0}</span>
+                                <span><strong>Студентов:</strong> ${students.length}</span>
+                                <span><strong>Завершили:</strong> ${completed}</span>
+                                <span><strong>Уроков:</strong> ${c.lessons ? c.lessons.length : 0}</span>
+                            </div>
+                        </div>
+                        <div class="course-actions">
+                            <button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})">Удалить</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const select = document.getElementById('selectCourse');
+            select.innerHTML = '<option value="">Выберите курс</option>' + 
+                courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+
+            const lessonSelect = document.getElementById('lessonCourseId');
+            lessonSelect.innerHTML = '<option value="">Выберите курс</option>' + 
+                courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+        }
+
+        function addCourse() {
+            const title = document.getElementById('courseTitle').value.trim();
+            const description = document.getElementById('courseDesc').value.trim();
+            const weight = parseFloat(document.getElementById('courseWeight').value) || 1.0;
+
+            if (!title) {
+                showToast('Введите название курса', 'error');
+                return;
+            }
+
+            let courses = getCourses();
+            const newCourse = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                weight: weight,
+                lessons: []
+            };
+            courses.push(newCourse);
+            localStorage.setItem('teacherCourses', JSON.stringify(courses));
+
+            const students = getStudents();
+            let progress = [];
+            students.forEach(student => {
+                progress.push({
+                    studentId: student.id,
+                    studentName: student.name,
+                    completed: false,
+                    score: 0
+                });
+            });
+            saveCourseProgress(newCourse.id, progress);
+
+            document.getElementById('courseTitle').value = '';
+            document.getElementById('courseDesc').value = '';
+            document.getElementById('courseWeight').value = '1.0';
+
+            showToast('Курс "' + title + '" создан!', 'success');
+            loadCourses();
+        }
+
+        function deleteCourse(id) {
+            if (!confirm('Удалить курс?')) return;
+
+            let courses = getCourses();
+            courses = courses.filter(c => c.id !== id);
+            localStorage.setItem('teacherCourses', JSON.stringify(courses));
+            localStorage.removeItem('courseProgress_' + id);
+
+            showToast('Курс удалён', 'success');
+            loadCourses();
+        }
+
+        function addLesson() {
+            const courseId = document.getElementById('lessonCourseId').value;
+            const title = document.getElementById('lessonTitle').value.trim();
+            const content = document.getElementById('lessonContent').value.trim();
+            const duration = parseInt(document.getElementById('lessonDuration').value) || 0;
+            const type = document.getElementById('lessonType').value;
+
+            if (!courseId) {
+                showToast('Выберите курс', 'error');
+                return;
+            }
+            if (!title) {
+                showToast('Введите название урока', 'error');
+                return;
+            }
+
+            let courses = getCourses();
+            const courseIndex = courses.findIndex(c => c.id === parseInt(courseId));
+            if (courseIndex === -1) {
+                showToast('Курс не найден', 'error');
+                return;
+            }
+
+            if (!courses[courseIndex].lessons) {
+                courses[courseIndex].lessons = [];
+            }
+
+            const newLesson = {
+                id: Date.now() + Math.random(),
+                title: title,
+                content: content,
+                duration: duration,
+                type: type,
+                order: courses[courseIndex].lessons.length + 1
+            };
+
+            courses[courseIndex].lessons.push(newLesson);
+            localStorage.setItem('teacherCourses', JSON.stringify(courses));
+
+            document.getElementById('lessonTitle').value = '';
+            document.getElementById('lessonContent').value = '';
+            document.getElementById('lessonDuration').value = '';
+
+            showToast('Урок "' + title + '" добавлен!', 'success');
+            loadCourses();
+        }
+
+        function loadStudents() {
+            const courseId = document.getElementById('selectCourse').value;
+            if (!courseId) {
+                document.getElementById('studentsList').innerHTML = '<p style="color:#7a9aa8;">Выберите курс</p>';
+                return;
+            }
+
+            const students = getCourseStudentsWithProgress(parseInt(courseId));
+            const list = document.getElementById('studentsList');
+
+            if (students.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-users"></i></div><p>Нет студентов на этом курсе</p></div>';
+                return;
+            }
+
+            const completedCount = students.filter(s => s.completed).length;
+            const avgScore = students.length > 0 ? Math.round(students.reduce((sum, s) => sum + (s.score || 0), 0) / students.length) : 0;
+
+            list.innerHTML = `
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;">
+                    <div style="background:#F8FBFC; padding:14px; border-radius:10px; text-align:center; border:1px solid #F0F6FA;">
+                        <div style="font-size:26px; font-weight:700; color:#1A3D4F;">${students.length}</div>
+                        <div style="font-size:13px; color:#7a9aa8;">Всего студентов</div>
+                    </div>
+                    <div style="background:#F8FBFC; padding:14px; border-radius:10px; text-align:center; border:1px solid #F0F6FA;">
+                        <div style="font-size:26px; font-weight:700; color:#1A3D4F;">${completedCount}</div>
+                        <div style="font-size:13px; color:#7a9aa8;">Завершили</div>
+                    </div>
+                    <div style="background:#F8FBFC; padding:14px; border-radius:10px; text-align:center; border:1px solid #F0F6FA;">
+                        <div style="font-size:26px; font-weight:700; color:#1A3D4F;">${avgScore}%</div>
+                        <div style="font-size:13px; color:#7a9aa8;">Средний балл</div>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#F8FBFC;">
+                                <th style="padding:12px; text-align:left; border-bottom:2px solid #F0F6FA; font-size:13px; color:#1A3D4F;">Студент</th>
+                                <th style="padding:12px; text-align:left; border-bottom:2px solid #F0F6FA; font-size:13px; color:#1A3D4F;">Email</th>
+                                <th style="padding:12px; text-align:left; border-bottom:2px solid #F0F6FA; font-size:13px; color:#1A3D4F;">Балл</th>
+                                <th style="padding:12px; text-align:left; border-bottom:2px solid #F0F6FA; font-size:13px; color:#1A3D4F;">Статус</th>
+                                <th style="padding:12px; text-align:left; border-bottom:2px solid #F0F6FA; font-size:13px; color:#1A3D4F;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${students.map((s) => `
+                                <tr>
+                                    <td style="padding:12px; border-bottom:1px solid #F0F6FA;"><strong>${s.name}</strong></td>
+                                    <td style="padding:12px; border-bottom:1px solid #F0F6FA; color:#7a9aa8;">${s.email}</td>
+                                    <td style="padding:12px; border-bottom:1px solid #F0F6FA;">${s.score || '—'}</td>
+                                    <td style="padding:12px; border-bottom:1px solid #F0F6FA;">
+                                        <span style="padding:4px 14px; border-radius:20px; font-size:12px; font-weight:600; ${s.completed ? 'background:#E8F5E9; color:#2E7D32;' : 'background:#FFF8E1; color:#F57F17;'}">
+                                            ${s.completed ? 'Завершил' : 'В процессе'}
+                                        </span>
+                                    </td>
+                                    <td style="padding:12px; border-bottom:1px solid #F0F6FA;">
+                                        ${!s.completed ? `<button class="btn btn-success btn-sm" onclick="markComplete(${parseInt(courseId)}, ${s.id})">Завершить</button>` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function markComplete(courseId, studentId) {
+            if (!confirm('Отметить студента как завершившего курс?')) return;
+
+            let progress = getCourseProgress(courseId);
+            const studentIndex = progress.findIndex(p => p.studentId === studentId);
+            if (studentIndex === -1) {
+                showToast('Студент не найден', 'error');
+                return;
+            }
+
+            progress[studentIndex].completed = true;
+            progress[studentIndex].score = Math.round(70 + Math.random() * 30);
+            saveCourseProgress(courseId, progress);
+
+            showToast('Студент отмечен как завершивший курс!', 'success');
+            loadStudents();
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+
+            if (tab === 'courses') loadCourses();
+            if (tab === 'students') loadStudents();
+        }
+
+        let toastTimer;
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = localStorage.getItem('userId');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (userRole !== 'teacher') {
+                alert('Доступ только для преподавателей');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail) {
+                document.getElementById('guestNav').style.display = 'none';
+                document.getElementById('userNav').style.display = 'flex';
+            }
+
+            getRealUsers();
+            getCourses();
+            initStudentProgress();
+            loadProfile();
+            loadCourses();
+        });
+    </script>
+
+</body>
+</html>

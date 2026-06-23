@@ -1,23 +1,418 @@
-<h1>Регистрация</h1>
-<input id="name" placeholder="Имя"><br>
-<input id="email" placeholder="Email"><br>
-<input id="password" placeholder="Пароль"><br>
-<button onclick="reg()">Зарегистрироваться</button>
-<div id="msg"></div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация - LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<script>
-async function reg() {
-  const res = await fetch('/api/register', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({
-      name: document.getElementById('name').value,
-      email: document.getElementById('email').value,
-      password: document.getElementById('password').value
-    })
-  });
-  const data = await res.json();
-  if(data.ok) location.href = 'login.html';
-  else document.getElementById('msg').innerText = data.error;
-}
-</script>
+        body {
+            font-family: 'Raleway', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            background: url('https://adukar.com/images/photo/kak-vybrat-kruzhok-po-robototekhnike-3.jpg') center/cover no-repeat fixed;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 61, 79, 0.65);
+            z-index: 0;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            background: #ffffffb0;
+            border-radius: 24px;
+            border: 1px solid #C5DDE8;
+            padding: 45px 50px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(43, 95, 122, 0.08);
+            transition: 0.3s;
+        }
+
+        .auth-container:hover {
+            box-shadow: 0 15px 60px rgba(43, 95, 122, 0.12);
+        }
+
+        .auth-container .logo {
+            font-family: 'Libertinus Sans', 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 30px;
+            color: #1A3D4F;
+            text-align: center;
+            display: block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .auth-container .logo span {
+            color: #5BA3C9;
+        }
+
+        .auth-container h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A3D4F;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .auth-container .subtitle {
+            text-align: center;
+            color: #7a9aa8;
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A3D4F;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            border: 1.5px solid #C5DDE8;
+            border-radius: 12px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            background: #f8fbfc96;
+            transition: 0.3s;
+            color: #2C3E50;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #5BA3C9;
+            background: #ffffff96;
+            box-shadow: 0 0 0 4px rgba(91, 163, 201, 0.12);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a9aa8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .form-group input::placeholder {
+            color: #b0c4d0;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #3A7B9E;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #2B5F7A;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(58, 123, 158, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7a9aa8;
+        }
+
+        .auth-links a {
+            color: #2B5F7A;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .auth-links a:hover {
+            color: #1A3D4F;
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 9999;
+            color: #fff;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #1A6B4A;
+        }
+
+        .toast.error {
+            background: #c0392b;
+        }
+
+        .toast.info {
+            background: #2B5F7A;
+        }
+
+        @media (max-width: 500px) {
+            .auth-container {
+                padding: 30px 24px;
+                border-radius: 20px;
+            }
+
+            .auth-container .logo {
+                font-size: 26px;
+            }
+
+            .auth-container h2 {
+                font-size: 20px;
+            }
+
+            .auth-container .subtitle {
+                font-size: 14px;
+                margin-bottom: 22px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px 14px;
+                font-size: 13px;
+                border-radius: 10px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 15px;
+                border-radius: 10px;
+            }
+
+            .auth-links {
+                font-size: 13px;
+                margin-top: 16px;
+            }
+
+            .toast {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                max-width: none;
+                padding: 12px 20px;
+                font-size: 13px;
+                border-radius: 10px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .auth-container {
+                padding: 22px 16px;
+                border-radius: 16px;
+            }
+
+            .auth-container .logo {
+                font-size: 22px;
+            }
+
+            .auth-container h2 {
+                font-size: 18px;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <a href="index.html" class="logo">LMS<span>.</span></a>
+        <h2>Регистрация</h2>
+        <p class="subtitle">Создайте новый аккаунт</p>
+
+        <div class="form-group">
+            <label>Полное имя</label>
+            <input type="text" id="registerName" placeholder="Иван Иванов">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="registerEmail" placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="registerPassword" placeholder="Минимум 6 символов">
+        </div>
+        <div class="form-group">
+            <label>Роль</label>
+            <select id="registerRole">
+                <option value="student">Студент</option>
+                <option value="teacher">Преподаватель</option>
+                <option value="curator">Куратор</option>
+                <option value="admin">Администратор</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="register()">Зарегистрироваться</button>
+
+        <div class="auth-links">
+            Уже есть аккаунт? <a href="login.html">Войти</a>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function initDatabase() {
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+            if (users.length === 0) {
+                users = [
+                    { id: 1, name: 'Екатерина Иванова', email: 'katya@email.com', password: '123456', role: 'student', active: true, avatar: null },
+                    { id: 2, name: 'Илон Макс', email: 'ilon@email.com', password: '123456', role: 'teacher', active: true, avatar: null },
+                    { id: 3, name: 'Анна Петрова', email: 'anna@email.com', password: '123456', role: 'curator', active: true, avatar: null },
+                    { id: 4, name: 'Администратор', email: 'admin@admin.com', password: 'admin123', role: 'admin', active: true, avatar: null }
+                ];
+                localStorage.setItem('lms_users', JSON.stringify(users));
+            }
+        }
+
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+            const password = document.getElementById('registerPassword').value.trim();
+            const role = document.getElementById('registerRole').value;
+
+            if (!name || !email || !password) {
+                showToast('Заполните все поля', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('Пароль должен быть минимум 6 символов', 'error');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('lms_users') || '[]');
+
+            if (users.find(u => u.email === email)) {
+                showToast('Пользователь с таким email уже существует', 'error');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                role: role,
+                active: true,
+                avatar: null,
+                created_at: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('lms_users', JSON.stringify(users));
+
+            localStorage.setItem('userId', newUser.id);
+            localStorage.setItem('userName', newUser.name);
+            localStorage.setItem('userEmail', newUser.email);
+            localStorage.setItem('userRole', newUser.role);
+
+            showToast('Регистрация успешна!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 500);
+        }
+
+        let toastTimer;
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || 'info');
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDatabase();
+            if (localStorage.getItem('userId') && localStorage.getItem('userEmail')) {
+                window.location.href = 'profile.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

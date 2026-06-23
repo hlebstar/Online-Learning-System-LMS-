@@ -1,13 +1,231 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>LMS Система</title>
+    <title>LMS - Онлайн-обучение</title>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Corsa Grotesk', 'Raleway', sans-serif; background: #E8F4F8; min-height: 100vh; }
+        .mainn { padding: 0 50px; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 30px 50px 20px; border-bottom: 1px solid #C5DDE8;
+            margin-bottom: 40px; flex-wrap: wrap; gap: 15px;
+        }
+        .header-left { display: flex; align-items: center; gap: 40px; }
+        .logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 22px; color: #1A3D4F; letter-spacing: 1px; text-decoration: none; }
+        .logo span { color: #5BA3C9; }
+        .nav-links { display: flex; gap: 30px; font-family: 'Raleway', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; }
+        .nav-links a { color: #2C3E50; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover { color: #2B5F7A; }
+        .header-right { display: flex; gap: 20px; align-items: center; }
+        .header-right a { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 14px; text-decoration: none; transition: all 0.3s; letter-spacing: 0.5px; }
+        .header-right .login-link { color: #2B5F7A; }
+        .header-right .login-link:hover { color: #1A3D4F; text-decoration: underline; }
+        .header-right .register-link { color: #FFFFFF; background: #3A7B9E; padding: 10px 28px; border-radius: 30px; }
+        .header-right .register-link:hover { background: #2B5F7A; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(58,123,158,0.3); }
+
+        .hero {
+            position: relative; border-radius: 30px; overflow: hidden; min-height: 420px;
+            display: flex; align-items: center; padding: 60px 70px;
+            background: url('https://cs14.pikabu.ru/post_img/2023/05/08/6/og_og_1683534284240260987.jpg') center/cover no-repeat;
+        }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 61, 79, 0.65); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; color: white; max-width: 700px; }
+        .hero-content h1 { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 42px; margin-bottom: 20px; color: #FFFFFF; }
+        .hero-content p { font-size: 18px; line-height: 1.8; opacity: 0.95; margin-bottom: 15px; color: #FFFFFF; }
+        .hero-content .btn-hero { display: inline-block; margin-top: 15px; padding: 14px 40px; background: #7FC1C5; color: #1A3D4F; border: none; border-radius: 40px; font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 16px; text-decoration: none; transition: all 0.3s; }
+        .hero-content .btn-hero:hover { background: #6db3b7; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(127,193,197,0.4); }
+
+        .content-section {
+            display: flex; align-items: center; gap: 50px;
+            background: transparent; padding: 50px 0; margin-top: 20px;
+            border: none; box-shadow: none;
+        }
+        .content-image { flex: 1; min-width: 280px; }
+        .content-image img { width: 100%; height: 380px; object-fit: cover; border-radius: 6px; }
+        .content-text { flex: 1.2; }
+        .content-text h2 { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 28px; color: #2B5F7A; margin-bottom: 18px; }
+        .content-text p { font-size: 16px; line-height: 1.8; color: #2C3E50; margin-bottom: 20px; }
+        .content-text ul { list-style: none; padding: 0; }
+        .content-text ul li { font-size: 15px; line-height: 2; color: #2C3E50; padding: 6px 0; border-bottom: 1px solid #F0F6FA; }
+        .content-text ul li:last-child { border-bottom: none; }
+
+        .directions { margin-top: 30px; padding: 40px 0; }
+        .directions h2 { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 32px; color: #2B5F7A; text-align: center; margin-bottom: 35px; }
+        .directions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .direction-card { background: #FFFFFF; border-radius: 20px; padding: 25px 22px; border: 1px solid #C5DDE8; transition: all 0.3s; box-shadow: 0 5px 15px rgba(43,95,122,0.05); }
+        .direction-card:hover { transform: translateY(-6px); box-shadow: 0 12px 35px rgba(43,95,122,0.12); border-color: #5BA3C9; }
+        .direction-card h3 { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 16px; color: #1A3D4F; margin-bottom: 10px; }
+        .direction-card p { font-size: 14px; line-height: 1.6; color: #2C3E50; margin: 0; }
+
+        .footer-main {
+            background: #FFFFFF; border-radius: 30px 30px 0 0;
+            padding: 40px 60px 20px; margin-top: 50px;
+            border-top: 1px solid #C5DDE8; box-shadow: 0 -5px 30px rgba(43,95,122,0.04);
+        }
+        .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 1fr 0.8fr; gap: 20px; margin-bottom: 25px; }
+        .footer-col h4 { font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 13px; color: #2B5F7A; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .footer-col p { font-size: 14px; line-height: 1.6; color: #2C3E50; margin: 0; }
+        .footer-col a { display: block; font-size: 14px; color: #2C3E50; text-decoration: none; padding: 3px 0; transition: color 0.3s; }
+        .footer-col a:hover { color: #2B5F7A; text-decoration: underline; }
+        .footer-logo { font-family: 'Libertinus Sans', 'Raleway', sans-serif; font-weight: 700; font-size: 24px; color: #1A3D4F; margin-bottom: 8px; }
+        .footer-logo span { color: #5BA3C9; }
+        .footer-desc { font-size: 14px; color: #7a9aa8; line-height: 1.6; max-width: 220px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid #EDE5D8; border-bottom: 1px solid #EDE5D8; flex-wrap: wrap; gap: 10px; font-size: 14px; color: #2C3E50; }
+        .footer-bottom-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; font-family: 'Raleway', sans-serif; }
+        .footer-bottom-left .divider { color: #C5DDE8; }
+        .footer-bottom-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+        .footer-bottom-right a { color: #2B5F7A; text-decoration: none; font-weight: 600; }
+        .footer-bottom-right a:hover { text-decoration: underline; }
+        .footer-copy { text-align: center; padding-top: 15px; font-size: 13px; color: #7a9aa8; }
+
+        @media (max-width: 1024px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 25px; }
+            .directions-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .mainn { padding: 0 25px; }
+            .header { flex-direction: column; align-items: stretch; gap: 15px; padding: 20px 25px; }
+            .header-left { flex-direction: column; align-items: stretch; gap: 12px; }
+            .nav-links { gap: 20px; font-size: 14px; flex-wrap: wrap; }
+            .header-right { justify-content: center; flex-wrap: wrap; }
+            .hero { padding: 40px 30px; min-height: 320px; }
+            .hero-content h1 { font-size: 28px; }
+            .hero-content p { font-size: 15px; }
+            .content-section { flex-direction: column; padding: 30px 0; gap: 25px; }
+            .content-image { min-width: unset; width: 100%; }
+            .content-image img { height: 200px; }
+            .content-text h2 { font-size: 22px; }
+        }
+        @media (max-width: 600px) {
+            .footer-grid { grid-template-columns: 1fr; gap: 15px; }
+            .footer-main { padding: 25px 20px 12px; border-radius: 20px 20px 0 0; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .directions-grid { grid-template-columns: 1fr; }
+            .directions h2 { font-size: 24px; }
+        }
+        @media (max-width: 480px) {
+            .mainn { padding: 0 15px; }
+            .hero { padding: 30px 20px; min-height: 280px; }
+            .hero-content h1 { font-size: 22px; }
+            .hero-content p { font-size: 14px; }
+            .hero-content .btn-hero { padding: 10px 25px; font-size: 14px; }
+            .content-image img { height: 160px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>📚 LMS Онлайн-обучение</h1>
-    
-    <p><a href="register.html">📝 Регистрация</a></p>
-    <p><a href="login.html">🔑 Вход</a></p>
-    <p><a href="profile.html">👤 Профиль</a></p>
+
+    <main class="mainn">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="logo">LMS<span>.</span></a>
+                <div class="nav-links">
+                    <a href="my-courses.html">Содержание</a>
+                    <a href="calendar.html">Календарь</a>
+                    <a href="courses.html">Курсы</a>
+                </div>
+            </div>
+            <div class="header-right" id="navRight">
+                <div id="guestNav">
+                    <a href="login.html" class="login-link">ВХОД</a>
+                    <a href="register.html" class="register-link">РЕГИСТРАЦИЯ</a>
+                </div>
+                <div id="userNav" style="display:none;">
+                    <a href="profile.html" class="login-link" style="font-weight:600;"> <span id="userNameDisplay">-</span></a>
+                    <a href="#" onclick="logout()" class="register-link" style="background:#c0392b; padding:8px 18px;">ВЫЙТИ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero">
+            <div class="hero-content">
+                <h1>О курсе</h1>
+                <p>Этот курс создан для того, чтобы помочь вам освоить современные технологии онлайн-обучения. Вы познакомитесь с ключевыми концепциями, инструментами и методами, которые используются в ведущих образовательных платформах.</p>
+                <p>Вас ждут интерактивные уроки, практические задания и тесты для закрепления материала. Присоединяйтесь к нашему сообществу и начните учиться уже сегодня!</p>
+                <a href="courses.html" class="btn-hero">Начать обучение </a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="content-image">
+                <img src="https://img.softline.com/store-ru/89c9217764cffe0070e8a0a56aaa27e6/d3e3568dbd0b8d3e3b01/scale-dec-1000x1000.jpg" alt="Обучение">
+            </div>
+            <div class="content-text">
+                <h2>Почему стоит учиться с нами?</h2>
+                <p>Наша платформа предлагает уникальный подход к обучению, который сочетает в себе современные технологии и проверенные методики. Мы верим, что образование должно быть доступным, интересным и эффективным для каждого.</p>
+                <ul>
+                    <li><strong>Актуальные знания</strong> — курсы обновляются регулярно</li>
+                    <li><strong>Опытные преподаватели</strong> — практики из индустрии</li>
+                    <li><strong>Отслеживание прогресса</strong> — вы всегда видите свои успехи</li>
+                    <li><strong>Сертификат</strong> — подтверждение ваших навыков</li>
+                </ul>
+            </div>
+        </div>
+
+        <section class="directions">
+            <h2>Какие IT-направления попробуете</h2>
+            <div class="directions-grid">
+                <div class="direction-card"><h3>Аналитика данных</h3><p>Изучите бизнес-метрики, выполните полный анализ данных маркетплейса</p></div>
+                <div class="direction-card"><h3>Data Science</h3><p>Построите модель машинного обучения, которая будет предсказывать класс вина</p></div>
+                <div class="direction-card"><h3>Тестирование</h3><p>Найдите несколько багов на странице сайта и напишете тест-кейсы и чек-листы</p></div>
+                <div class="direction-card"><h3>Проджект-менеджмент</h3><p>Подготовите презентацию для защиты проекта перед крупным инвестором</p></div>
+                <div class="direction-card"><h3>Python-разработка</h3><p>Создайте работающий Telegram-бот, который сможет отвечать на вопросы юзеров</p></div>
+                <div class="direction-card"><h3>Веб-разработка</h3><p>Настроите внешний вид и функциональность карточки товара интернет-магазина</p></div>
+                <div class="direction-card"><h3>Разработка игр</h3><p>Познакомитесь с миром игровой разработки и обновите уровень в редакторе Unity</p></div>
+                <div class="direction-card"><h3>Кибербезопасность</h3><p>Узнаете, что такое пентст, какие есть основные термины, стандарты и изучите методологию</p></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-main">
+        <div class="footer-grid" style="max-width:1400px; margin:0 auto;">
+            <div class="footer-col">
+                <div class="footer-logo">LMS<span>.</span></div>
+                <p class="footer-desc">Современная платформа для онлайн-обучения. Учись когда угодно, где угодно.</p>
+            </div>
+            <div class="footer-col">
+                <h4>EXPLORE</h4>
+                <a href="index.html">Главная</a>
+                <a href="courses.html">Курсы</a>
+                <a href="my-courses.html">Мои курсы</a>
+                <a href="profile.html">Профиль</a>
+            </div>
+            <div class="footer-col">
+                <h4>VISIT</h4>
+                <p>LMS Learning Center<br>123 Education St, Ste 100<br>Moscow, Russia 101000</p>
+            </div>
+            <div class="footer-col">
+                <h4>FOLLOW</h4>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL</h4>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+        <div class="footer-bottom" style="max-width:1400px; margin:0 auto;">
+            <div class="footer-bottom-left"><span>Next: About</span><span class="divider">|</span><span>Be Bold.</span></div>
+            <div class="footer-bottom-right"><span>New Business</span><a href="mailto:engage@lms.com">engage@lms.com</a><span>+7 999 333 3106</span></div>
+        </div>
+        <div class="footer-copy"><p>© 2026 LMS. All Rights Reserved.</p></div>
+    </footer>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        if (userId) {
+            document.getElementById('guestNav').style.display = 'none';
+            document.getElementById('userNav').style.display = 'flex';
+            document.getElementById('userNameDisplay').textContent = userName || 'Пользователь';
+        }
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+    </script>
 </body>
 </html>
